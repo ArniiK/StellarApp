@@ -41,8 +41,6 @@ class RegistrationFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_after_login, container,false)
         val view = binding.root
 
-        setAccountsBtn = binding.afterLoginCreateBtn
-        setAccountsBtn.setOnClickListener(this)
         return view
     }
 
