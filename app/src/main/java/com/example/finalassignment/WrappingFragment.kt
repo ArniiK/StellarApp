@@ -1,12 +1,18 @@
 package com.example.finalassignment
 
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TableLayout
 import androidx.databinding.DataBindingUtil
-import com.example.finalassignment.databinding.FragmentAfterLoginBinding
+import androidx.viewpager2.widget.ViewPager2
+import com.example.finalassignment.databinding.FragmentWrappingBinding
+import com.google.android.material.tabs.TabLayout
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -18,12 +24,17 @@ private const val ARG_PARAM2 = "param2"
  * Use the [WrappingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class WrappingFragment : Fragment() {
+class WrappingFragment : Fragment(), TabLayout.OnTabSelectedListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var viewpager: ViewPager2
+    private lateinit var viewAdapter: ViewAdapter
+    private lateinit var toolBar: androidx.appcompat.widget.Toolbar
+    private lateinit var tabLayout: TabLayout
+
     //binding
-    private lateinit var binding: FragmentAfterLoginBinding
+    private lateinit var binding: FragmentWrappingBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,9 +49,10 @@ class WrappingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_after_login, container,false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_wrapping, container,false)
         val view = binding.root
-
+        addToolbar()
+        initViewPager()
         return view
     }
 
@@ -63,4 +75,55 @@ class WrappingFragment : Fragment() {
                 }
             }
     }
+
+    private fun addToolbar(){
+
+        toolBar = binding.pageToolbar
+        tabLayout = binding.menuBarTabLayout
+        tabLayout.addOnTabSelectedListener(this)
+        tabLayout.getTabAt(0)?.icon!!.setTint(Color.BLACK)   // este preskusat
+        tabLayout.getTabAt(1)?.icon!!.setTint(Color.WHITE)
+        tabLayout.getTabAt(2)?.icon!!.setTint(Color.WHITE)
+    }
+
+    private fun initViewPager(){
+
+        viewAdapter = ViewAdapter(this)     //skusit, ci pojde inak getSupportFragmentManager a zmenit constructor v adapteri
+
+        viewpager = binding.pager
+        viewpager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        viewpager.adapter = viewAdapter
+        //viewpager.setCurrentItem(0, false) nastavi sa na prvu polozku
+
+        viewpager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
+
+            override fun onPageSelected(position: Int) {
+                tabLayout.getTabAt(position)?.select()
+                super.onPageSelected(position)
+
+
+            }
+        });
+
+
+    }
+
+    override fun onTabSelected(tab: TabLayout.Tab?) {
+        if (tab != null) {
+            tab.icon!!.setTint(Color.BLACK)
+            viewpager.setCurrentItem(tab.position)
+        }
+    }
+
+    override fun onTabUnselected(tab: TabLayout.Tab?) {
+        if (tab != null) {
+            tab.icon!!.setTint(Color.WHITE)
+        }
+    }
+
+    override fun onTabReselected(tab: TabLayout.Tab?) {
+
+    }
+
+
 }
