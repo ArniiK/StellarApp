@@ -11,25 +11,23 @@
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_loginFragment_to_registrationFragment"
-            app:destination="@id/registrationFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/afterLogin"
-        android:name="com.example.finalassignment.AfterLogin"
-        android:label="fragment_after_login"
-        tools:layout="@layout/fragment_after_login" >
+            app:destination="@id/registrationFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
         <action
-            android:id="@+id/action_afterLogin_to_wrappingFragment"
+            android:id="@+id/action_loginFragment_to_wrappingFragment"
             app:destination="@id/wrappingFragment" />
     </fragment>
     <fragment
         android:id="@+id/registrationFragment"
         android:name="com.example.finalassignment.RegistrationFragment"
         android:label="fragment_registration"
-        tools:layout="@layout/fragment_registration" >
+        tools:layout="@layout/fragment_registration">
         <action
-            android:id="@+id/action_registrationFragment_to_afterLogin"
-            app:destination="@id/afterLogin" />
+            android:id="@+id/action_registrationFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/wrappingFragment"
