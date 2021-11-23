@@ -5,55 +5,65 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.finalassignment.databinding.ActivityMainBinding
+import com.example.finalassignment.databinding.FragmentHistoryBinding
+import java.util.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [HistoryFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HistoryFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private lateinit var transactionAdapter: TransactionAdapter
+    private lateinit var binding: FragmentHistoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history, container, false)
-    }
+        binding = FragmentHistoryBinding.inflate(inflater)
+        val view = binding.root
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HistoryFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HistoryFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        val transactionList: MutableList<Transaction> =
+            mutableListOf(
+                Transaction(
+                    "+",
+                    "Jozo",
+                    23.45,
+                    Date(2020,
+                        10,
+                        10),
+                    "EUR"
+                ),
+                Transaction(
+                    "-",
+                    "Peto",
+                    43.25,
+                    Date(2021,
+                        12,
+                        10),
+                    "USD"
+                ),
+                Transaction(
+                    "-",
+                    "Fero",
+                    13.00,
+                    Date(2021,
+                        12,
+                        24),
+                    "EUR"
+                )
+            )
+
+        transactionAdapter = TransactionAdapter(transactionList)
+
+        binding.rvTransactionHistory.adapter = transactionAdapter
+        binding.rvTransactionHistory.layoutManager = LinearLayoutManager(activity)
+        return view
     }
 }
