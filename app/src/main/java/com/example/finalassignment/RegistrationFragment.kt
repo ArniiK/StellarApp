@@ -8,9 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.finalassignment.databinding.FragmentRegistrationBinding
+import com.example.finalassignment.roomdb.UserRegistration
+import com.example.finalassignment.roomdb.UserRegistrationViewModel
+import kotlinx.android.synthetic.main.fragment_registration.view.*
+import org.stellar.sdk.KeyPair.random
+import java.security.KeyPair
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,6 +39,8 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
     private lateinit var registerBtn : Button
     private lateinit var loginClickable: TextView
 
+    private lateinit var mUserRegistrationViewModel: UserRegistrationViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -45,16 +54,63 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate<FragmentRegistrationBinding>(inflater,R.layout.fragment_registration,container, false)
+        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_registration,container, false)
+        mUserRegistrationViewModel = ViewModelProvider(this).get(UserRegistrationViewModel::class.java)
         val view = binding.root
 
+
+
         registerBtn = binding.registrationBtn
-        registerBtn.setOnClickListener(this)
+        view.registrationBtn.setOnClickListener{
+            val returnState = insertDataToDatabase()
+
+            if (returnState.equals(0)) {
+                Toast.makeText(requireContext(), "Successfully registered!", Toast.LENGTH_LONG).show()
+                val action = RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment()
+                view?.findNavController()?.navigate(action)
+
+            }
+            if (returnState.equals(1))
+                Toast.makeText(requireContext(),"Passwords are not the same!",Toast.LENGTH_LONG).show()
+
+        }
 
         loginClickable = binding.registrationClickableLoginText //klikatelny text na presun na login
         loginClickable.setOnClickListener(this)
 
         return view
+    }
+
+    /** Funkcia na pridanie do databazy
+     * @return 0 -> pridalo uspnesne
+     * @return 1 -> passwordy sa nezhoduju
+     * @return 2 TODO */
+    private fun insertDataToDatabase():Int
+    {
+
+        val userName = view?.editTextTextPersonName?.text.toString()
+        val pinAgain = view?.registrationPinAgainPassword?.text.toString()
+        val pin = view?.registrationPinPassword?.text.toString()
+
+
+        val pair: org.stellar.sdk.KeyPair? = org.stellar.sdk.KeyPair.random()
+
+
+
+
+
+        if(!pin.equals(pinAgain))
+        {
+            return 1
+        }
+
+
+
+        val userRegistration = UserRegistration(0,userName,pin, pair?.accountId.toString(),pair?.secretSeed.toString())
+        mUserRegistrationViewModel.addUser(userRegistration)
+
+        return 0
+
     }
 
     override fun onClick(v: View?) {
@@ -67,7 +123,11 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
 
     }
 
-    fun register(){ //TODO: mala by tu byt stelar funkcionalita - registracia na testnet
+    fun register(){
+        //TODO: mala by tu byt stelar funkcionalita - registracia na testnet
+
+        //DATABASE
+
 
         Log.v("register function", "Register function launched")
         //todo: dopln registraciu

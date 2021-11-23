@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class UserRegistrationViewModel(application: Application): AndroidViewModel(application) {
-    private val getAllUsers: LiveData<List<UserRegistration>>
+    val getAllUsers: LiveData<List<UserRegistration>>
     private val repository: UserRegistrationRepository
     init {
         val userRegistrationDAO = UserRegistrationDatabase.getDatabase(application).userRegistrationDAO()

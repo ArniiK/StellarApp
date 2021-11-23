@@ -8,9 +8,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.finalassignment.databinding.FragmentAfterLoginBinding
 import com.example.finalassignment.databinding.FragmentLoginBinding
+import com.example.finalassignment.roomdb.UserRegistration
+import com.example.finalassignment.roomdb.UserRegistrationViewModel
+import kotlinx.android.synthetic.main.fragment_login.view.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -29,6 +35,9 @@ class LoginFragment : Fragment(), View.OnClickListener {
     private lateinit var loginBtn : Button
     private lateinit var loginClickable: TextView
 
+
+    private lateinit var mUserRegistrationViewModel: UserRegistrationViewModel
+
     //binding
     private lateinit var binding: FragmentLoginBinding
 
@@ -45,12 +54,28 @@ class LoginFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        mUserRegistrationViewModel = ViewModelProvider(this).get(UserRegistrationViewModel::class.java)
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container,false)
         val view = binding.root
 
         loginBtn = binding.loginSubmitBtn
         loginBtn.setOnClickListener(this)
+
+        view.loginSubmitBtn.setOnClickListener{
+            val pin = view.PInfragmentLoginEditText.text.toString()
+            val userName = view.usernameLoginEditText.text.toString()
+
+            mUserRegistrationViewModel.getAllUsers
+
+            val allData:LiveData<List<UserRegistration>> =  mUserRegistrationViewModel.getAllUsers
+
+
+
+
+
+        }
 
         loginClickable = binding.registerTextClickableLogin //klikatelny text registrovat s podivne zvolenym id
         loginClickable.setOnClickListener(this)
