@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".TransactionFragment">
+    tools:context=".TransactionFragment"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -29,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_begin="273dp" />
+            app:layout_constraintGuide_begin="219dp" />
 
         <TextView
             android:id="@+id/walletBalanceTextView"
@@ -79,6 +80,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/sumToPayNumberDec" />
 
+
         <Button
             android:id="@+id/sendTransactionButton"
             android:layout_width="wrap_content"
@@ -88,24 +90,30 @@
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/beneficiaryPublicKeyEditText" />
+            app:layout_constraintTop_toBottomOf="@+id/PKrecipientLayout"
+            app:layout_constraintVertical_bias="0.352" />
 
-        <EditText
-            android:id="@+id/beneficiaryPublicKeyEditText"
+        <LinearLayout
+            android:id="@+id/PKrecipientLayout"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_marginTop="32dp"
             android:ems="10"
-            android:hint="Public key"
-            android:inputType="textPersonName"
             android:textAlignment="center"
-            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView6" />
+            app:layout_constraintTop_toBottomOf="@+id/textView6"
+            >
+
+                <include
+                    android:id="@+id/PKInputButton"
+                    layout="@layout/text_view_beneficiary"
+                    />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-</FrameLayout>
+</layout>

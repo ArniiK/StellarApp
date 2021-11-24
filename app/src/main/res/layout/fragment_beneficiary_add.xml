@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
-        android:text="Your partner accounts"
+        android:text="Add partner account"
         android:textColor="@color/purple_500"
         android:textSize="30sp"
         android:textStyle="bold"
@@ -21,44 +21,18 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
 
-    <LinearLayout
-        android:id="@+id/partnerRelativeLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"
-        android:layout_below="@+id/textView7"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="48dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/partnerRecycler"
-            android:layout_width="323dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="0dp"
-            android:padding="1dp"
-            android:scrollbars="vertical"
-            tools:layout_editor_absoluteX="-16dp"
-            tools:layout_editor_absoluteY="95dp" />
-
-
-    </LinearLayout>
-
-
     <Button
         android:id="@+id/remAqDismissButton"
         android:layout_width="111dp"
         android:layout_height="42dp"
-        android:layout_below="@+id/partnerRelativeLayout"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="75dp"
         android:background="@color/alertRed"
         android:text="leave tab"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/partnerRelativeLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/partnerPKInputEditText"
+        app:layout_constraintVertical_bias="0.18" />
 
     <Button
         android:id="@+id/button"
@@ -67,21 +41,45 @@
         android:layout_height="42dp"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="75dp"
-        android:text="add"
         android:background="@color/purple_700"
+        android:text="save"
         app:layout_constraintBottom_toBottomOf="@+id/remAqDismissButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/partnerRelativeLayout"
+        app:layout_constraintTop_toBottomOf="@+id/partnerPKInputEditText"
         app:layout_constraintVertical_bias="1.0" />
 
     <Space
         android:id="@+id/space"
         android:layout_width="390dp"
         android:layout_height="41dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="292dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button" />
+
+    <EditText
+        android:id="@+id/partnerNicknameInputEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Account nickname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+    <EditText
+        android:id="@+id/partnerPKInputEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Public key"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/partnerNicknameInputEditText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

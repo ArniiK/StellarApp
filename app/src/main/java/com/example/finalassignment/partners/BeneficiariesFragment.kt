@@ -1,10 +1,14 @@
-package com.example.finalassignment
+package com.example.finalassignment.partners
 
+import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.fragment.app.DialogFragment
+import com.example.finalassignment.R
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -16,7 +20,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [BeneficiariesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class BeneficiariesFragment : Fragment() {
+class BeneficiariesFragment : DialogFragment(), View.OnClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -27,6 +31,10 @@ class BeneficiariesFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+
+
+
     }
 
     override fun onCreateView(
@@ -56,4 +64,10 @@ class BeneficiariesFragment : Fragment() {
                 }
             }
     }
+
+
+    override fun onClick(v: View?) {
+        TODO("Not yet implemented")
+    }
+
 }

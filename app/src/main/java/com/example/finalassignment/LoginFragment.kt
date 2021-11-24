@@ -63,22 +63,12 @@ class LoginFragment : Fragment(), View.OnClickListener {
         loginBtn = binding.loginSubmitBtn
         loginBtn.setOnClickListener(this)
 
-        view.loginSubmitBtn.setOnClickListener{
-            val pin = view.PInfragmentLoginEditText.text.toString()
-            val userName = view.usernameLoginEditText.text.toString()
-
-            mUserRegistrationViewModel.getAllUsers
-
-            val allData:LiveData<List<UserRegistration>> =  mUserRegistrationViewModel.getAllUsers
-
-
-
-
-
-        }
-
-        loginClickable = binding.registerTextClickableLogin //klikatelny text registrovat s podivne zvolenym id
+        loginClickable = binding.registerTextClickableLogin //klikatelny text registrovat
         loginClickable.setOnClickListener(this)
+
+        // Arnicek a marecek
+        //kod ktory ste tu mali ate vo funkcii logIn dole
+        //
 
         return view
     }
@@ -113,6 +103,17 @@ class LoginFragment : Fragment(), View.OnClickListener {
     }
 
     fun logIn(){    //TODO: check the credentials and move to main wrapping fragment
+
+
+        val pin = binding.PInfragmentLoginEditText.text.toString()
+        val userName = binding.usernameLoginEditText.text.toString()
+
+        mUserRegistrationViewModel.getAllUsers
+
+        val allData:LiveData<List<UserRegistration>> =  mUserRegistrationViewModel.getAllUsers
+
+
+
 
         val action = LoginFragmentDirections.actionLoginFragmentToWrappingFragment()
         view?.findNavController()?.navigate(action)
