@@ -86,7 +86,7 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
     private fun insertDataToDatabase():Int
     {
 
-        val userName = view?.privateKeyEditText?.text.toString()
+        val userName = view?.privateKeyEditText?.text.toString()            //prerobte to pls na databinding
         val pinAgain = view?.registrationPinAgainPassword?.text.toString()
         val pin = view?.registrationPinPassword?.text.toString()
 

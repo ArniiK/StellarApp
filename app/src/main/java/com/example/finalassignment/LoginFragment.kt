@@ -104,9 +104,10 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
     fun logIn(){    //TODO: check the credentials and move to main wrapping fragment
 
+        // pin a username uz nie su, ma byt iba private key
 
-        val pin = binding.PInfragmentLoginEditText.text.toString()
-        val userName = binding.usernameLoginEditText.text.toString()
+        //val pin = binding.PInfragmentLoginEditText.text.toString()
+        //val userName = binding.usernameLoginEditText.text.toString()
 
         mUserRegistrationViewModel.getAllUsers
 
