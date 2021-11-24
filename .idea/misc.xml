@@ -13,8 +13,8 @@
         <entry key="..\:/FinalAssignment/app/src/main/res/layout/fragment_beneficiary_add.xml" value="0.25" />
         <entry key="..\:/FinalAssignment/app/src/main/res/layout/fragment_first.xml" value="0.25416666666666665" />
         <entry key="..\:/FinalAssignment/app/src/main/res/layout/fragment_history.xml" value="0.18697916666666667" />
-        <entry key="..\:/FinalAssignment/app/src/main/res/layout/fragment_login.xml" value="0.1" />
-        <entry key="..\:/FinalAssignment/app/src/main/res/layout/fragment_registration.xml" value="0.33" />
+        <entry key="..\:/FinalAssignment/app/src/main/res/layout/fragment_login.xml" value="0.22" />
+        <entry key="..\:/FinalAssignment/app/src/main/res/layout/fragment_registration.xml" value="0.25" />
         <entry key="..\:/FinalAssignment/app/src/main/res/layout/fragment_transaction.xml" value="0.16" />
         <entry key="..\:/FinalAssignment/app/src/main/res/layout/fragment_wrapping.xml" value="0.16" />
         <entry key="..\:/FinalAssignment/app/src/main/res/layout/item_transaction.xml" value="0.16770833333333332" />
@@ -34,7 +34,7 @@
   <component name="VisualizationToolProject">
     <option name="state">
       <ProjectState>
-        <option name="scale" value="0.18697916666666667" />
+        <option name="scale" value="0.33" />
       </ProjectState>
     </option>
   </component>

@@ -39,29 +39,14 @@
             app:layout_constraintTop_toBottomOf="@+id/registerTextClickableLogin" />
 
         <EditText
-            android:id="@+id/PInfragmentLoginEditText"
+            android:id="@+id/loginPrivateKeyEditText"
             android:layout_width="250dp"
             android:layout_height="48dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="150dp"
             android:ems="10"
-            android:hint="Your pin"
-            android:inputType="numberPassword"
-            android:textAlignment="center"
-            android:textSize="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/usernameLoginEditText" />
-
-        <EditText
-            android:id="@+id/usernameLoginEditText"
-            android:layout_width="250dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="92dp"
-            android:ems="10"
+            android:hint="Your private  key"
             android:inputType="textPersonName"
             android:text=""
-            android:hint="Username"
             android:textAlignment="center"
             android:textSize="20dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -74,23 +59,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="100dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="32dp"
             android:text="Or if you are new,   "
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/PInfragmentLoginEditText" />
+            app:layout_constraintTop_toBottomOf="@+id/loginPrivateKeyEditText" />
 
         <TextView
             android:id="@+id/registerTextClickableLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="32dp"
             android:text="Register"
-            android:textStyle="bold"
-            android:textSize="18sp"
             android:textColor="@color/purple_500"
+            android:textSize="18sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/PInfragmentLoginEditText" />
+            app:layout_constraintTop_toBottomOf="@+id/loginPrivateKeyEditText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

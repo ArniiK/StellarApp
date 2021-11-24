@@ -16,8 +16,6 @@ import com.example.finalassignment.databinding.FragmentRegistrationBinding
 import com.example.finalassignment.roomdb.UserRegistration
 import com.example.finalassignment.roomdb.UserRegistrationViewModel
 import kotlinx.android.synthetic.main.fragment_registration.view.*
-import org.stellar.sdk.KeyPair.random
-import java.security.KeyPair
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -88,7 +86,7 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
     private fun insertDataToDatabase():Int
     {
 
-        val userName = view?.editTextTextPersonName?.text.toString()
+        val userName = view?.privateKeyEditText?.text.toString()
         val pinAgain = view?.registrationPinAgainPassword?.text.toString()
         val pin = view?.registrationPinPassword?.text.toString()
 
