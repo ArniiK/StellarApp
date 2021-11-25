@@ -17,32 +17,20 @@ import com.example.finalassignment.R
 import com.example.finalassignment.databinding.FragmentBeneficiariesBinding
 import com.example.finalassignment.databinding.FragmentRegistrationBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [BeneficiariesFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class BeneficiariesFragment(private var itemlist: List<PartnerViewItem>) : DialogFragment(), View.OnClickListener,
-PartnersRecyclerAdapter.OnDeleteItemListener
+class BeneficiariesFragment() : DialogFragment(), View.OnClickListener,
+PartnersRecyclerAdapter.OnDeleteItemListener, PartnersRecyclerAdapter.OnPartnerPickedListener, AddPartnerFragment.OnAccountAdded
 {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-    private lateinit var binding: FragmentBeneficiariesBinding
-    private var adapter: PartnersRecyclerAdapter? = null
 
+    private lateinit var binding: FragmentBeneficiariesBinding
+    private lateinit var itemlist: MutableList<PartnerViewItem>
+    private var adapter: PartnersRecyclerAdapter? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
         }
 
     }
@@ -51,95 +39,19 @@ PartnersRecyclerAdapter.OnDeleteItemListener
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-//
-//        val builder = AlertDialog.Builder(activity)
-//        builder.setTitle("Partners' accounts")
-//        builder.setMessage("Your payment partners")
 
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_beneficiaries,container, false)
-
-        var recycler = binding.partnerRecycler
-        var layoutManager = LinearLayoutManager(activity)
-
-        adapter = PartnersRecyclerAdapter(itemlist)
-        adapter!!.setOnDeleteListener(this)
-
-        recycler.layoutManager = layoutManager
-        recycler.adapter = adapter
-
-
-        var dismissBtn = binding.dismissButtonPartnersList
-        dismissBtn.setOnClickListener(this)
-
-        var addPartnerBtn = binding.addPartnerButtonPartnersList
-        addPartnerBtn.setOnClickListener(this)
-
+        fillItemList()      //itemy z db
+        setupRecycler()
+        binding.dismissButtonPartnersList.setOnClickListener(this)
+        binding.addPartnerButtonPartnersList.setOnClickListener(this)
 
         return binding.root
-
-
-
-
-
-
-
-
-        // Inflate the layout for this fragment
-       // binding = DataBindingUtil.inflate(inflater,R.layout.fragment_beneficiaries,container, false)
-        //return binding.root
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return super.onCreateDialog(savedInstanceState)
     }
-
-//    companion object {
-//        /**
-//         * Use this factory method to create a new instance of
-//         * this fragment using the provided parameters.
-//         *
-//         * @param param1 Parameter 1.
-//         * @param param2 Parameter 2.
-//         * @return A new instance of fragment BeneficiariesFragment.
-//         */
-//        // TODO: Rename and change types and number of parameters
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            BeneficiariesFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//
-//    }
-
-
-
-
-//    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-//
-//        val builder = AlertDialog.Builder(activity)
-//        builder.setTitle("Partners' accounts")
-//        builder.setMessage("Your payment partners")
-//
-//        binding = DataBindingUtil.inflate(LayoutInflater.from(context),R.layout.fragment_beneficiaries,null, false)
-//
-//        var recycler = binding.partnerRecycler
-//        var layoutManager = LinearLayoutManager(activity)
-//
-//        adapter = PartnersRecyclerAdapter(itemlist)
-//
-//        recycler.layoutManager = layoutManager
-//        recycler.adapter = adapter
-//
-//
-//        var dismissBtn = binding.dismissButton
-//        dismissBtn.setOnClickListener(this)
-//
-//        return builder.create()
-//
-//    }
 
     override fun onClick(v: View?) {
 
@@ -155,10 +67,70 @@ PartnersRecyclerAdapter.OnDeleteItemListener
     fun openAddingFragment(){
 
         var dialog = AddPartnerFragment()
+        dialog.setOnAccountAddedListener(this)
         dialog.show(activity?.supportFragmentManager!!, "addPartnerDialog")
     }
 
-    override fun onDelete(position: Int) {
-        Toast.makeText(activity,"Deleted",Toast.LENGTH_LONG).show()
+    fun fillItemList(){
+
+        //TODO natiahnut items z DB
+
+        //provizorne data
+        var partnerViewItem = PartnerViewItem("Public key", "Partner nickname")
+        var partnerViewItem1 = PartnerViewItem("Ox000000000000000000", "Petrik")
+
+        itemlist = mutableListOf<PartnerViewItem>()
+        itemlist.add(partnerViewItem)
+        itemlist.add(partnerViewItem1)
+
     }
+
+    fun setupRecycler(){        //??????ak bude na db async call, do callbacku ked budu itemy moze ist vytvorenie recyclera
+
+        var recycler = binding.partnerRecycler
+        var layoutManager = LinearLayoutManager(activity)
+
+        adapter = PartnersRecyclerAdapter(itemlist)
+        adapter!!.setOnDeleteListener(this)
+        adapter!!.setOnPartnerPickedListener(this)
+
+        recycler.layoutManager = layoutManager
+        recycler.adapter = adapter
+    }
+
+
+    override fun onPartnerPicked(position: Int) {
+
+        dialog?.cancel()
+    }
+
+
+    override fun onDelete(position: Int) {
+
+        //TODO removal function (DB) returning success or error
+
+        val wasRemoved = true
+
+        if (wasRemoved){
+
+            itemlist.removeAt(position)
+            adapter?.notifyItemRemoved(position)
+            Toast.makeText(activity,"Deleted",Toast.LENGTH_LONG).show()
+
+        }
+        else Toast.makeText(activity,"DB removal error",Toast.LENGTH_LONG).show()
+
+    }
+
+
+
+    override fun onAccountAdded(accountNickname: String, publicKey: String) {
+
+        val newPartner = PartnerViewItem(publicKey, accountNickname)
+        itemlist.add(newPartner)
+        adapter?.notifyItemInserted(itemlist.lastIndex)
+
+    }
+
+
 }

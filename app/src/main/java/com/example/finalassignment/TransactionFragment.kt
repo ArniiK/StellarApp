@@ -90,14 +90,7 @@ class TransactionFragment : Fragment(), View.OnClickListener {
 
     private fun openPartnersDialog(){
 
-        var partnerViewItem = PartnerViewItem("Public key", "Partner nickname")
-        var partnerViewItem1 = PartnerViewItem("Ox000000000000000000", "Petrik")
-
-        val partnerItems = mutableListOf<PartnerViewItem>()
-        partnerItems.add(partnerViewItem)
-        partnerItems.add(partnerViewItem1)
-
-        var dialog = BeneficiariesFragment(partnerItems)
+        var dialog = BeneficiariesFragment()
         dialog.show(activity?.supportFragmentManager!!, "PartnersDialog")
 
     }

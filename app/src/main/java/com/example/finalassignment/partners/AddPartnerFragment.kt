@@ -15,30 +15,23 @@ import com.example.finalassignment.R
 import com.example.finalassignment.databinding.FragmentAddPartnerBinding
 import com.example.finalassignment.databinding.FragmentBeneficiariesBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
  * A simple [Fragment] subclass.
  * Use the [AddPartnerFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
 class AddPartnerFragment : DialogFragment(), View.OnClickListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
     private lateinit var binding: FragmentAddPartnerBinding
     private var adapter: PartnersRecyclerAdapter? = null
     private var addBtn: Button? = null
     private var dismissBtn: Button? = null
+    private lateinit var listener: OnAccountAdded
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
         }
     }
 
@@ -48,7 +41,6 @@ class AddPartnerFragment : DialogFragment(), View.OnClickListener {
     ): View? {
 
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_add_partner,container, false)
-
         binding.addPartnerButton.setOnClickListener(this)
         binding.dismissButton.setOnClickListener(this)
 
@@ -59,7 +51,6 @@ class AddPartnerFragment : DialogFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
 
         when(v){
-
             binding.addPartnerButton -> addPartner()
             binding.dismissButton -> dialog?.cancel()
         }
@@ -69,13 +60,31 @@ class AddPartnerFragment : DialogFragment(), View.OnClickListener {
 
     fun addPartner(){
         var isSuccesful = true
-        //TODO implement adding to the db and also updating recyclerview
+        //TODO implement adding to the db
 
         if (isSuccesful){
+
+            val nickName = binding.addPartnerNicknameEdittext.text.toString()
+            val publicKey = binding.addPartnerPkEdittext.text.toString()
+
             Toast.makeText(activity,"Partner added", Toast.LENGTH_LONG).show()
+            listener.onAccountAdded(nickName, publicKey)
             dialog?.cancel()
         }
         else Toast.makeText(activity,"Adding not succesful", Toast.LENGTH_LONG).show()
 
     }
+
+
+    // listenery na eventy - komunikacia medzi parent a child fragmentom -- este si nie som isty ci potrebne
+
+    interface OnAccountAdded{
+
+        fun onAccountAdded(accountNickname: String, publicKey: String)
+    }
+    fun setOnAccountAddedListener(listener: AddPartnerFragment.OnAccountAdded) {
+        this.listener = listener
+    }
+
+
 }

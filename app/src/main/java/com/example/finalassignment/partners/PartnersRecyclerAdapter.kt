@@ -3,21 +3,17 @@ package com.example.finalassignment.partners
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalassignment.R
-import com.example.finalassignment.databinding.FragmentBeneficiariesBinding
-import com.example.finalassignment.databinding.FragmentHistoryBinding
-import com.example.finalassignment.databinding.FragmentRegistrationBinding
 import com.example.finalassignment.databinding.PartnerAccountItemBinding
 
-class PartnersRecyclerAdapter(private val itemList: List<PartnerViewItem>): RecyclerView.Adapter<PartnersRecyclerAdapter.PartnersViewHolder>() {
+class PartnersRecyclerAdapter(private val itemList: MutableList<PartnerViewItem>):
+    RecyclerView.Adapter<PartnersRecyclerAdapter.PartnersViewHolder>() {
 
     //ondeletelistener
-    private lateinit var listener: OnDeleteItemListener
+    private lateinit var delListener: OnDeleteItemListener
+    private lateinit var partnerPickedListener: OnPartnerPickedListener
 
     private var _binding:PartnerAccountItemBinding ?= null
     private val binding get() = _binding!!
@@ -28,7 +24,7 @@ class PartnersRecyclerAdapter(private val itemList: List<PartnerViewItem>): Recy
         _binding = PartnerAccountItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         val view = binding.root
 
-        return PartnersViewHolder(view, listener)      //returnujem holder
+        return PartnersViewHolder(view, delListener, partnerPickedListener)      //returnujem holder
     }
 
     override fun onBindViewHolder(holder: PartnersViewHolder, position: Int) {
@@ -40,7 +36,7 @@ class PartnersRecyclerAdapter(private val itemList: List<PartnerViewItem>): Recy
        return itemList.size
     }
 
-  inner  class PartnersViewHolder(itemView: View, listener: OnDeleteItemListener) : RecyclerView.ViewHolder(itemView){
+  inner  class PartnersViewHolder(itemView: View, delListener: OnDeleteItemListener, pickedListener: OnPartnerPickedListener) : RecyclerView.ViewHolder(itemView){
 
 
         val pkTextView: TextView        // klikatelny text publik key partnera
@@ -50,15 +46,25 @@ class PartnersRecyclerAdapter(private val itemList: List<PartnerViewItem>): Recy
            pkTextView =  binding.partnerAccountTextView       //itemView.findViewById(R.id.partnerAccountTextView)
            removeBtn =  binding.removeAccButton        //itemView.findViewById(R.id.removeAccButton)
 
+
            removeBtn.setOnClickListener(object : View.OnClickListener{
 
                override fun onClick(v: View?) {
 
-                   val position = adapterPosition
+                   if (adapterPosition != RecyclerView.NO_POSITION){
 
-                   if (position != RecyclerView.NO_POSITION){
+                       delListener.onDelete(adapterPosition)
+                   }
 
-                       listener.onDelete(position)
+               }
+           })
+
+           pkTextView.setOnClickListener(object :View.OnClickListener{
+
+               override fun onClick(v: View?) {
+                   if (adapterPosition != RecyclerView.NO_POSITION){
+
+                       partnerPickedListener.onPartnerPicked(adapterPosition)
                    }
 
                }
@@ -68,15 +74,23 @@ class PartnersRecyclerAdapter(private val itemList: List<PartnerViewItem>): Recy
 
    }
 
-    public interface OnDeleteItemListener{
+    interface OnDeleteItemListener{
 
         fun onDelete(position: Int)
     }
 
-    public fun setOnDeleteListener(listener: OnDeleteItemListener) {
-        this.listener = listener;
+    fun setOnDeleteListener(listener: OnDeleteItemListener) {
+        this.delListener = listener
     }
 
+    interface OnPartnerPickedListener{
+
+        fun onPartnerPicked(position: Int)
+    }
+
+    fun setOnPartnerPickedListener(listener: OnPartnerPickedListener) {
+        this.partnerPickedListener = listener
+    }
 
 
 
