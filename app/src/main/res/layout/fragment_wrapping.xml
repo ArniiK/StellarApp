@@ -10,7 +10,7 @@
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="741dp">
+        android:layout_height="match_parent">
 
         <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
@@ -33,6 +33,8 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#7851A9"
+            android:elevation="0dp"
             android:layout_gravity="bottom|end">
 
 
@@ -51,7 +53,7 @@
                     android:id="@+id/menuBarTabLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@null"
+                    android:background="#7851A9"
                     app:tabIndicatorColor="#3C1361"
                     app:tabIndicatorFullWidth="true"
                     app:tabIndicatorHeight="3dp"

@@ -18,7 +18,7 @@ class ViewAdapter (fragment: Fragment) : FragmentStateAdapter(fragment){
 
             0 -> return TransactionFragment()
             1 -> return HistoryFragment()
-            2 -> return BeneficiariesFragment()
+            2 -> return AfterLogin()        //ide sa zrusit, budu len 2 polozky v menu
             else -> return TransactionFragment()    // this will never happen
         }
     }

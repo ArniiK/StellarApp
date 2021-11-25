@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".partners.AddPartnerFragment">
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:text="Add partner"
+            android:textColor="@color/purple_500"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/dismissButton"
+            android:layout_width="111dp"
+            android:layout_height="42dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="48dp"
+            android:layout_marginEnd="72dp"
+            android:background="@color/alertRed"
+            android:text="leave tab"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addPartnerPkEdittext" />
+
+        <Button
+            android:id="@+id/addPartnerButton"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="111dp"
+            android:layout_height="42dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="48dp"
+            android:background="@color/purple_700"
+            android:text="add"
+            app:layout_constraintBottom_toBottomOf="@+id/dismissButton"
+            app:layout_constraintEnd_toStartOf="@+id/dismissButton"
+            app:layout_constraintHorizontal_bias="0.545"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addPartnerPkEdittext"
+            app:layout_constraintVertical_bias="0.397" />
+
+        <Space
+            android:id="@+id/space"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.476"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addPartnerButton"
+            android:layout_width="390dp"
+            android:layout_height="41dp"
+            tools:layout_editor_absoluteX="91dp"
+            tools:layout_editor_absoluteY="430dp" />
+
+        <EditText
+            android:id="@+id/addPartnerNicknameEdittext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="52dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Partner nickname"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+        <EditText
+            android:id="@+id/addPartnerPkEdittext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Public key"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addPartnerNicknameEdittext" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+
+
+
+
+</layout>

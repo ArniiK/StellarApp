@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import com.example.finalassignment.databinding.FragmentRegistrationBinding
 import com.example.finalassignment.databinding.FragmentTransactionBinding
 import com.example.finalassignment.partners.BeneficiariesFragment
+import com.example.finalassignment.partners.PartnerViewItem
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -88,9 +89,15 @@ class TransactionFragment : Fragment(), View.OnClickListener {
     }
 
     private fun openPartnersDialog(){
-        Toast.makeText(activity,"dialog",Toast.LENGTH_LONG).show()
-        Log.i("clicked", "dialog")
-        var dialog = BeneficiariesFragment()
+
+        var partnerViewItem = PartnerViewItem("Public key", "Partner nickname")
+        var partnerViewItem1 = PartnerViewItem("Ox000000000000000000", "Petrik")
+
+        val partnerItems = mutableListOf<PartnerViewItem>()
+        partnerItems.add(partnerViewItem)
+        partnerItems.add(partnerViewItem1)
+
+        var dialog = BeneficiariesFragment(partnerItems)
         dialog.show(activity?.supportFragmentManager!!, "PartnersDialog")
 
     }
