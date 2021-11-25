@@ -30,6 +30,7 @@ class PartnersRecyclerAdapter(private val itemList: MutableList<PartnerViewItem>
     override fun onBindViewHolder(holder: PartnersViewHolder, position: Int) {
         val item = itemList[position]
         holder.pkTextView.text = item.publicKey
+        holder.nicknameView.text = item.nickname
     }
 
     override fun getItemCount(): Int {
@@ -40,10 +41,12 @@ class PartnersRecyclerAdapter(private val itemList: MutableList<PartnerViewItem>
 
 
         val pkTextView: TextView        // klikatelny text publik key partnera
+        val nicknameView: TextView
         val removeBtn: ImageButton
 
        init {
            pkTextView =  binding.partnerAccountTextView       //itemView.findViewById(R.id.partnerAccountTextView)
+           nicknameView = binding.partnerNameTextView
            removeBtn =  binding.removeAccButton        //itemView.findViewById(R.id.removeAccButton)
 
 
@@ -64,7 +67,7 @@ class PartnersRecyclerAdapter(private val itemList: MutableList<PartnerViewItem>
                override fun onClick(v: View?) {
                    if (adapterPosition != RecyclerView.NO_POSITION){
 
-                       partnerPickedListener.onPartnerPicked(adapterPosition)
+                       partnerPickedListener.onPartnerPicked(pkTextView.text.toString())
                    }
 
                }
@@ -85,7 +88,7 @@ class PartnersRecyclerAdapter(private val itemList: MutableList<PartnerViewItem>
 
     interface OnPartnerPickedListener{
 
-        fun onPartnerPicked(position: Int)
+        fun onPartnerPicked(publicKey: String)
     }
 
     fun setOnPartnerPickedListener(listener: OnPartnerPickedListener) {

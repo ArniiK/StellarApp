@@ -3,6 +3,7 @@ package com.example.finalassignment.partners
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ PartnersRecyclerAdapter.OnDeleteItemListener, PartnersRecyclerAdapter.OnPartnerP
 
     private lateinit var binding: FragmentBeneficiariesBinding
     private lateinit var itemlist: MutableList<PartnerViewItem>
+    private lateinit var pKfetchedListener: OnPartnerPKfetchedListener
     private var adapter: PartnersRecyclerAdapter? = null
 
 
@@ -99,8 +101,8 @@ PartnersRecyclerAdapter.OnDeleteItemListener, PartnersRecyclerAdapter.OnPartnerP
     }
 
 
-    override fun onPartnerPicked(position: Int) {
-
+    override fun onPartnerPicked(publicKey: String) {
+        pKfetchedListener.onPartnerFetched(publicKey)
         dialog?.cancel()
     }
 
@@ -130,6 +132,15 @@ PartnersRecyclerAdapter.OnDeleteItemListener, PartnersRecyclerAdapter.OnPartnerP
         itemlist.add(newPartner)
         adapter?.notifyItemInserted(itemlist.lastIndex)
 
+    }
+
+    interface OnPartnerPKfetchedListener{
+
+        fun onPartnerFetched(publicKey: String)
+    }
+
+    fun setOnPartnerPKfetchedListener(listener: OnPartnerPKfetchedListener) {
+        this.pKfetchedListener = listener
     }
 
 

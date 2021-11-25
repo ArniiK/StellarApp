@@ -107,10 +107,9 @@
             app:layout_constraintTop_toBottomOf="@+id/textView6"
             >
 
-                <include
-                    android:id="@+id/PKInputButton"
-                    layout="@layout/text_view_beneficiary"
-                    />
+            <include
+                android:id="@+id/PKInputField"
+                layout="@layout/text_view_beneficiary" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

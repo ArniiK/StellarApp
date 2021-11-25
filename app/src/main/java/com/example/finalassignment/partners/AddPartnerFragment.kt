@@ -59,10 +59,10 @@ class AddPartnerFragment : DialogFragment(), View.OnClickListener {
 
 
     fun addPartner(){
-        var isSuccesful = true
+        var isSuccessful = true
         //TODO implement adding to the db
 
-        if (isSuccesful){
+        if (isSuccessful){
 
             val nickName = binding.addPartnerNicknameEdittext.text.toString()
             val publicKey = binding.addPartnerPkEdittext.text.toString()
