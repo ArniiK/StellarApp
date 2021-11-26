@@ -12,9 +12,10 @@ import androidx.databinding.DataBindingUtil
 import com.example.finalassignment.R
 import com.example.finalassignment.databinding.FragmentTransactionBinding
 import com.example.finalassignment.partners.BeneficiariesFragment
+import java.security.PublicKey
 
 
-class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragment.OnPartnerPKfetchedListener {
+class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragment.OnPartnerPKfetchedListener, PinFragment.OnTransactionConfirmedListener {
     // TODO: Rename and change types of parameters
     private lateinit var partnersBtn: ImageButton
     private lateinit var spendBtn: Button
@@ -55,10 +56,14 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
 
     private fun performTransaction(){
 
-        val dialog = PinFragment()
-        dialog.show(activity?.supportFragmentManager!!, "PinDialog")
-        Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()
+        if (verifyTransaction()){
 
+            val dialog = PinFragment()
+            dialog.setOnTransactionConfirmedListener(this)
+            dialog.show(activity?.supportFragmentManager!!, "PinDialog")
+            Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()
+
+        }
     }
 
     override fun onPartnerFetched(publicKey: String) {
@@ -72,4 +77,101 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
         dialog.show(activity?.supportFragmentManager!!, "PartnersDialog")
 
     }
+
+    private fun verifyTransaction(): Boolean{     //skontroluj zostatok, skontroluj, ci existuje moj ucet, jeho ucet, otvor zadanie pinu
+
+        //TODO nepouzivat zobrazeny balance, treba zo stellaru natiahnut, ten je aktualny
+        if(binding.walletBalanceTextView.text.toString().toDoubleOrNull() != null) {
+
+            if (!binding.sumToPayNumberDec.text.toString().isEmpty() && !binding.walletBalanceTextView.text.toString().isEmpty()) {    //ci je balance double cislo
+                //amount field not empty
+
+                val amount = binding.sumToPayNumberDec.text.toString().toDouble()
+
+                if (binding.walletBalanceTextView.text.toString()
+                        .toDouble() < binding.sumToPayNumberDec.text.toString().toDouble()
+                ) {
+                    // insufficient balance
+                    Toast.makeText(activity, "Insufficient balance", Toast.LENGTH_LONG).show()
+                    return false
+
+                } else {
+
+                    //balance sufficient, perform account existance check
+
+                        if (!binding.PKInputField.beneficiaryPKInputText.text.toString().isEmpty()){
+
+                            if (checkAccountExist(binding.PKInputField.beneficiaryPKInputText.text.toString())) {
+
+                                // state of sufficient balance and existing recipient account
+                                //PIN verification
+                                return true
+
+                            }
+                            //not existing account
+                            else {
+
+                                Toast.makeText(activity,"Recipient account not on stellar network", Toast.LENGTH_LONG).show()
+                                return false
+                            }
+
+                        }
+                    else{
+                            Toast.makeText(activity,"Recipient account field empty", Toast.LENGTH_LONG).show()
+                        return false
+                    }
+
+
+
+
+                }
+            } else {
+                // ammount field empty
+                Toast.makeText(activity, "Amount field empty", Toast.LENGTH_LONG).show()
+                return false
+
+            }
+        }
+        else{
+
+            Toast.makeText(activity, "Your balance is not double number", Toast.LENGTH_LONG).show()
+            return false
+        }
+    }
+
+    private fun checkAccountExist(publicKey: String) :Boolean{
+
+        //TODO check if account exists on stellar network
+
+        return true
+    }
+
+    private fun checkAccountNotEmpty(publicKey: String) :Boolean{
+
+        if( binding.PKInputField.beneficiaryPKInputText.text.toString().isEmpty()){
+
+            return false
+        }
+
+        return true
+    }
+
+
+    override fun onTransactionConfirmed() {
+
+        //TODO tranzakcia
+        val transactionExecuted = true
+
+        if (transactionExecuted) {
+            //TODO refresh balance from stellar network
+            Toast.makeText(activity, "Your transaction was performed", Toast.LENGTH_LONG).show()
+        }
+        else  Toast.makeText(activity, "Transaction error - not executed", Toast.LENGTH_LONG).show()
+    }
+
+    fun getBalance(publicKey: PublicKey): Double{
+
+        return 1000.toDouble()
+    }
+
 }

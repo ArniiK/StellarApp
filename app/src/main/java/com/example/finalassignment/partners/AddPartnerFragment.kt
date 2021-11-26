@@ -1,6 +1,5 @@
 package com.example.finalassignment.partners
 
-import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,10 +9,8 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalassignment.R
 import com.example.finalassignment.databinding.FragmentAddPartnerBinding
-import com.example.finalassignment.databinding.FragmentBeneficiariesBinding
 
 /**
  * A simple [Fragment] subclass.
@@ -26,7 +23,7 @@ class AddPartnerFragment : DialogFragment(), View.OnClickListener {
     private var adapter: PartnersRecyclerAdapter? = null
     private var addBtn: Button? = null
     private var dismissBtn: Button? = null
-    private lateinit var listener: OnAccountAdded
+    private lateinit var listener: OnAccountAddedListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,11 +75,11 @@ class AddPartnerFragment : DialogFragment(), View.OnClickListener {
 
     // listenery na eventy - komunikacia medzi parent a child fragmentom -- este si nie som isty ci potrebne
 
-    interface OnAccountAdded{
+    interface OnAccountAddedListener{
 
         fun onAccountAdded(accountNickname: String, publicKey: String)
     }
-    fun setOnAccountAddedListener(listener: AddPartnerFragment.OnAccountAdded) {
+    fun setOnAccountAddedListener(listener: AddPartnerFragment.OnAccountAddedListener) {
         this.listener = listener
     }
 
