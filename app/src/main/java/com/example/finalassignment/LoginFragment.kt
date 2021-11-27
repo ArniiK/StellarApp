@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -16,6 +17,7 @@ import com.example.finalassignment.databinding.FragmentAfterLoginBinding
 import com.example.finalassignment.databinding.FragmentLoginBinding
 import com.example.finalassignment.roomdb.UserRegistration
 import com.example.finalassignment.roomdb.UserRegistrationViewModel
+import com.example.finalassignment.transaction.PinFragment
 import kotlinx.android.synthetic.main.fragment_login.view.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -28,7 +30,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [LoginFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class LoginFragment : Fragment(), View.OnClickListener {
+class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactionConfirmedListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -109,9 +111,15 @@ class LoginFragment : Fragment(), View.OnClickListener {
         //val pin = binding.PInfragmentLoginEditText.text.toString()
         //val userName = binding.usernameLoginEditText.text.toString()
 
+        //TODO tieto funckie si presun do ontransaction confirmed
         mUserRegistrationViewModel.getAllUsers
-
         val allData:LiveData<List<UserRegistration>> =  mUserRegistrationViewModel.getAllUsers
+
+        val dialog = PinFragment()
+        dialog.setOnTransactionConfirmedListener(this)
+        dialog.show(activity?.supportFragmentManager!!, "PinDialog")
+        Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()
+
 
 
 
@@ -128,4 +136,9 @@ class LoginFragment : Fragment(), View.OnClickListener {
     }
 
 
+    override fun onTransactionConfirmed() {
+
+        //TODO after successful pin confirmation procedure
+        Toast.makeText(activity,"Pin succesfuly confirmed", Toast.LENGTH_LONG).show()
+    }
 }

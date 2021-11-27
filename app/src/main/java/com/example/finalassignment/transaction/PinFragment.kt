@@ -62,7 +62,7 @@ class PinFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun closeTransaction(){
-        Toast.makeText(activity,"Transaction closed", Toast.LENGTH_LONG).show()
+        Toast.makeText(activity,"Authorization closed", Toast.LENGTH_LONG).show()
         dialog?.cancel()
     }
 
