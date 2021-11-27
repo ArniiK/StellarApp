@@ -23,6 +23,8 @@
         <entry key="..\:/FinalAssignment/app/src/main/res/layout/partner_account_item.xml" value="0.25" />
         <entry key="..\:/FinalAssignment/app/src/main/res/layout/text_view_beneficiary.xml" value="0.25" />
         <entry key="..\:/FinalAssignment/app/src/main/res/menu/menu_main.xml" value="0.25416666666666665" />
+        <entry key="app/src/main/res/layout/fragment_login.xml" value="0.157548125633232" />
+        <entry key="app/src/main/res/layout/fragment_pin.xml" value="0.157548125633232" />
       </map>
     </option>
   </component>

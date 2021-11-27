@@ -107,9 +107,9 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
     private fun insertDataToDatabase():Int
     {
 
-        val privateKey = view?.privateKeyEditText?.text.toString()            //prerobte to pls na databinding
-        val pinAgain = view?.registrationPinAgainPassword?.text.toString()
-        val pin = view?.registrationPinPassword?.text.toString()
+        val privateKey = binding.privateKeyEditText.text.toString()
+        val pinAgain = binding.registrationPinAgainPassword.text.toString()
+        val pin = binding.registrationPinPassword.text.toString()
 
         if(!pin.equals(pinAgain)||!validatePIN(pin))
         {

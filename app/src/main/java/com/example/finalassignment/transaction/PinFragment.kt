@@ -1,17 +1,16 @@
 package com.example.finalassignment.transaction
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.finalassignment.R
 import com.example.finalassignment.databinding.FragmentPinBinding
-import java.security.PrivateKey
+import com.example.finalassignment.roomdb.UserRegistrationViewModel
 
 
 class PinFragment : DialogFragment(), View.OnClickListener {
@@ -19,7 +18,7 @@ class PinFragment : DialogFragment(), View.OnClickListener {
     private lateinit var binding:FragmentPinBinding
     private lateinit var listener: OnTransactionConfirmedListener
     private var privateKey: String? = null
-
+    private lateinit var mUserRegistrationViewModel: UserRegistrationViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +35,12 @@ class PinFragment : DialogFragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        mUserRegistrationViewModel = ViewModelProvider(this).get(UserRegistrationViewModel::class.java)
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_pin,container, false)
         binding.pinConfirmButton.setOnClickListener(this)
         binding.pinDismissButton.setOnClickListener(this)
 
-        Log.d("privateKeyPin" ,"private key is: " + privateKey)
+//        Log.d("privateKeyPin" ,"private key is: " + privateKey)
 
         return binding.root
     }
@@ -50,16 +49,18 @@ class PinFragment : DialogFragment(), View.OnClickListener {
 
         when(v){
 
-            binding.pinConfirmButton -> confirmTransaction()
+            binding.pinConfirmButton -> confirmTransaction(privateKey)
             binding.pinDismissButton -> closeTransaction()
         }
     }
 
-    private fun confirmTransaction(){
+    private fun confirmTransaction(privateKey: String?){
+        val pinCode = binding.editTextNumberPassword.text.toString()
 
-        val isPinCorrect = true
-        //TODO PIN check if correct
-        if (isPinCorrect){
+        // funkcia tryToLogin ma vratit ci je spravny pin pre dany privateKey
+        val isPinCorrect = mUserRegistrationViewModel.tryToLogin(privateKey, pinCode)
+
+        if (isPinCorrect == true){
 
             dialog?.cancel()        //zavriem dialog
             //previest tranzakciu v transaction fragment, ak sa podari, toast ze sa podarila, ak nie tak ze sa nepodarila, znovunacitanie zostatku a jeho refresh

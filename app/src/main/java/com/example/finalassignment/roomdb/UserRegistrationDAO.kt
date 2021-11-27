@@ -15,4 +15,6 @@ interface UserRegistrationDAO {
     @Query("Select * from user_registration_table order by id ASC")
     fun getAllUsers(): LiveData<List<UserRegistration>>
 
+    @Query("Select * from user_registration_table where publicKey == :publicId")
+    fun getUserByPublicId(publicId: String): LiveData<UserRegistration>
 }

@@ -10,4 +10,7 @@ class UserRegistrationRepository(private val userRegistrationDAO: UserRegistrati
     suspend fun addUser(userRegistration: UserRegistration){
         userRegistrationDAO.addUser(userRegistration)
     }
+    suspend fun  getUserByPublicId(publicId: String): LiveData<UserRegistration> {
+        return userRegistrationDAO.getUserByPublicId(publicId)
+    }
 }

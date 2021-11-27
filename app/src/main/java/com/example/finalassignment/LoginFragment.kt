@@ -112,10 +112,10 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
         //val userName = binding.usernameLoginEditText.text.toString()
 
         //TODO tieto funckie si presun do ontransaction confirmed
-        mUserRegistrationViewModel.getAllUsers
-        val allData:LiveData<List<UserRegistration>> =  mUserRegistrationViewModel.getAllUsers
+//        mUserRegistrationViewModel.getAllUsers
+//        val allData:LiveData<List<UserRegistration>> =  mUserRegistrationViewModel.getAllUsers
 
-        val privateKey = "some private key"
+        val privateKey = binding.loginPrivateKeyEditText.text.toString()
 
         val dialog = PinFragment()
 
@@ -126,10 +126,6 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
         dialog.setOnTransactionConfirmedListener(this)
         dialog.show(activity?.supportFragmentManager!!, "PinDialog")
         Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()
-
-
-
-
 
         val action = LoginFragmentDirections.actionLoginFragmentToWrappingFragment()
         view?.findNavController()?.navigate(action)
