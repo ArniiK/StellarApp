@@ -19,7 +19,8 @@ class UserRegistrationViewModel(application: Application): AndroidViewModel(appl
     var bool: Boolean? = null
     init {
         val userRegistrationDAO = UserRegistrationDatabase.getDatabase(application).userRegistrationDAO()
-        repository = UserRegistrationRepository(userRegistrationDAO)
+        val transactionDAO = UserRegistrationDatabase.getDatabase(application).transactionDAO()
+        repository = UserRegistrationRepository(userRegistrationDAO, transactionDAO)
         getAllUsers = repository.getAllUsers
 
     }
