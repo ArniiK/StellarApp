@@ -115,7 +115,14 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
         mUserRegistrationViewModel.getAllUsers
         val allData:LiveData<List<UserRegistration>> =  mUserRegistrationViewModel.getAllUsers
 
+        val privateKey = "some private key"
+
         val dialog = PinFragment()
+
+        var args: Bundle? = Bundle()
+        args?.putString("privateKey", privateKey)
+
+        dialog.setArguments(args)
         dialog.setOnTransactionConfirmedListener(this)
         dialog.show(activity?.supportFragmentManager!!, "PinDialog")
         Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()

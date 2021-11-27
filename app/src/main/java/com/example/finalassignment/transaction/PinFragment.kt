@@ -1,6 +1,7 @@
 package com.example.finalassignment.transaction
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,20 +11,25 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.example.finalassignment.R
 import com.example.finalassignment.databinding.FragmentPinBinding
+import java.security.PrivateKey
 
 
 class PinFragment : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding:FragmentPinBinding
     private lateinit var listener: OnTransactionConfirmedListener
-
+    private var privateKey: String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
 
-        }
+            val receivedArgs = getArguments()
+            if (receivedArgs != null) {
+                privateKey = receivedArgs.getString("privateKey")
+            }
+
+
     }
 
     override fun onCreateView(
@@ -34,6 +40,8 @@ class PinFragment : DialogFragment(), View.OnClickListener {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_pin,container, false)
         binding.pinConfirmButton.setOnClickListener(this)
         binding.pinDismissButton.setOnClickListener(this)
+
+        Log.d("privateKeyPin" ,"private key is: " + privateKey)
 
         return binding.root
     }
