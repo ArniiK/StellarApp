@@ -44,12 +44,12 @@ class Encryption {
 //        BadPaddingException::class,
 //        IllegalBlockSizeException::class
 //    )
-    fun encrypt(algorithm: String?, input: String, key: SecretKey?, iv: IvParameterSpec?, data: HashedPinEncryptedData): HashedPinEncryptedData? {
+    fun encrypt( input: String, key: SecretKey?, iv: ByteArray, data: HashedPinEncryptedData): HashedPinEncryptedData? {
         try {
-            val cipher = Cipher.getInstance(algorithm)
-            cipher.init(Cipher.ENCRYPT_MODE, key, iv)
+            val cipher = Cipher.getInstance(ALGORITHM)
+            val ivSpec = IvParameterSpec(iv)
+            cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec)
             val encryptedtext = Base64.encodeToString(cipher.doFinal(input.toByteArray(Charsets.UTF_8)), Base64.DEFAULT)
-            data.iv = iv
             data.encryptedText = encryptedtext
 
             return data
@@ -68,13 +68,14 @@ class Encryption {
 //        BadPaddingException::class,
 //        IllegalBlockSizeException::class
 //    )
-    fun decrypt(algorithm: String?, data: HashedPinEncryptedData): String? {
+    fun decrypt(data: HashedPinEncryptedData, iv: ByteArray): String? {
         try {
-            val cipher = Cipher.getInstance(algorithm)
+            val cipher = Cipher.getInstance(ALGORITHM)
 
             val cipherText = data.encryptedText
             val key = data.hashedPin
-            cipher.init(Cipher.DECRYPT_MODE, key, data.iv)
+            val ivSpec = IvParameterSpec(iv)
+            cipher.init(Cipher.DECRYPT_MODE, key, ivSpec)
 
             return  String(cipher.doFinal(Base64.decode(cipherText, Base64.DEFAULT)))
         }
@@ -84,9 +85,9 @@ class Encryption {
         return null
     }
 
-    fun generateIv(): IvParameterSpec {
+    fun generateIv(): ByteArray {
         val iv = ByteArray(16)
         SecureRandom().nextBytes(iv)
-        return IvParameterSpec(iv)
+        return iv
     }
 }

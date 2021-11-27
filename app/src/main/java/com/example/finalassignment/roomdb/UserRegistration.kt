@@ -8,10 +8,8 @@ data class UserRegistration(
 
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    val userName: String,
-    val password: String,
     val publicKey: String,
-    val privateKey: String
-
-
+    val salt: ByteArray?,
+    val privateKey: String?,
+    val iv: ByteArray?
 )

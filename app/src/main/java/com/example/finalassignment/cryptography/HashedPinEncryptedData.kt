@@ -6,7 +6,6 @@ import javax.crypto.spec.IvParameterSpec
 class HashedPinEncryptedData{
     var hashedPin: SecretKey? = null
     var salt: ByteArray? = null
-    var iv: IvParameterSpec? = null
     var encryptedText: String? = null
 
     constructor()
