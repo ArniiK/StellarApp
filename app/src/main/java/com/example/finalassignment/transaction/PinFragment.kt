@@ -16,6 +16,8 @@ import com.example.finalassignment.R
 import com.example.finalassignment.cryptography.Encryption
 import com.example.finalassignment.cryptography.HashedPinEncryptedData
 import com.example.finalassignment.databinding.FragmentPinBinding
+import com.example.finalassignment.roomdb.ActiveUser
+import com.example.finalassignment.roomdb.ActiveUserViewModel
 import com.example.finalassignment.roomdb.UserRegistration
 import com.example.finalassignment.roomdb.UserRegistrationViewModel
 import org.stellar.sdk.KeyPair
@@ -33,7 +35,7 @@ class PinFragment : DialogFragment(), View.OnClickListener {
     private lateinit var listener: OnTransactionConfirmedListener
     private var privateKey: String? = null
     private lateinit var mUserRegistrationViewModel: UserRegistrationViewModel
-
+    private lateinit var mActiveUserViewModel: ActiveUserViewModel
     private var test: List<UserRegistration> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +53,7 @@ class PinFragment : DialogFragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        mActiveUserViewModel = ViewModelProvider(this).get(ActiveUserViewModel::class.java)
         mUserRegistrationViewModel = ViewModelProvider(this).get(UserRegistrationViewModel::class.java)
         mUserRegistrationViewModel.getAllUsers.observe(viewLifecycleOwner, Observer { it ->
             test = it
@@ -161,6 +164,8 @@ class PinFragment : DialogFragment(), View.OnClickListener {
 
 
         if (isPinCorrect == true){
+            val activeUser = ActiveUser(user!!.id, "Y")
+            mActiveUserViewModel.addActiveUser(activeUser)
             Toast.makeText(requireContext(),"ASABACHALA SABACHALA SAUNDSKA ARABIA",Toast.LENGTH_LONG).show()
 
             dialog?.cancel()        //zavriem dialog

@@ -6,12 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [UserRegistration::class, Transaction::class],version = 1, exportSchema = false)
+@Database(entities = [UserRegistration::class, Transaction::class, ActiveUser::class],version = 4, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class UserRegistrationDatabase: RoomDatabase() {
 
     abstract fun userRegistrationDAO(): UserRegistrationDAO
     abstract fun transactionDAO(): TransactionDAO
+    abstract fun activeUserDAO(): ActiveUserDAO
 
     companion object{
         @Volatile

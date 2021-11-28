@@ -11,10 +11,13 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.finalassignment.databinding.FragmentAfterLoginBinding
 import com.example.finalassignment.databinding.FragmentLoginBinding
+import com.example.finalassignment.roomdb.ActiveUser
+import com.example.finalassignment.roomdb.ActiveUserViewModel
 import com.example.finalassignment.roomdb.UserRegistration
 import com.example.finalassignment.roomdb.UserRegistrationViewModel
 import com.example.finalassignment.transaction.PinFragment
@@ -39,6 +42,10 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
 
 
     private lateinit var mUserRegistrationViewModel: UserRegistrationViewModel
+    private lateinit var mActiveUserViewModel: ActiveUserViewModel
+
+    private var activeUser: ActiveUser? = null
+
 
     //binding
     private lateinit var binding: FragmentLoginBinding
@@ -57,6 +64,14 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
         savedInstanceState: Bundle?
     ): View? {
 
+        mActiveUserViewModel = ViewModelProvider(this).get(ActiveUserViewModel::class.java)
+        //TODO: ARNE
+//        mActiveUserViewModel.getActiveUser().
+
+        // priklad observu treba este pridat do viewu premennu livedata a ju vyplnovat a potom to tuna observovat
+//        mUserRegistrationViewModel.getAllUsers.observe(viewLifecycleOwner, Observer { it ->
+//            test = it
+//        })
         mUserRegistrationViewModel = ViewModelProvider(this).get(UserRegistrationViewModel::class.java)
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container,false)
