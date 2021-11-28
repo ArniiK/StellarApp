@@ -27,7 +27,7 @@ class Encryption {
         return HashedPinEncryptedData(secretKeyHashedPin, salt)
     }
 
-    fun hashPinLogin(salt: ByteArray, pin: String): SecretKey {
+    fun hashPinLogin(salt: ByteArray?, pin: String): SecretKey {
         val spec = PBEKeySpec(pin.toCharArray(), salt, 1000, 256)
         val skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
         val hash = skf.generateSecret(spec).encoded
@@ -44,12 +44,12 @@ class Encryption {
 //        BadPaddingException::class,
 //        IllegalBlockSizeException::class
 //    )
-    fun encrypt( input: String, key: SecretKey?, iv: ByteArray, data: HashedPinEncryptedData): HashedPinEncryptedData? {
+    fun encrypt( input: String?, key: SecretKey?, iv: ByteArray?, data: HashedPinEncryptedData): HashedPinEncryptedData? {
         try {
             val cipher = Cipher.getInstance(ALGORITHM)
             val ivSpec = IvParameterSpec(iv)
             cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec)
-            val encryptedtext = Base64.encodeToString(cipher.doFinal(input.toByteArray(Charsets.UTF_8)), Base64.DEFAULT)
+            val encryptedtext = Base64.encodeToString(cipher.doFinal(input?.toByteArray(Charsets.UTF_8)), Base64.DEFAULT)
             data.encryptedText = encryptedtext
 
             return data
