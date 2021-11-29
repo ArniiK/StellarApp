@@ -1,8 +1,9 @@
 package com.example.finalassignment.roomdb
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
-import java.util.*
+import androidx.room.TypeConverters
+import java.time.Instant
+import java.time.LocalDate
 
 @Entity(tableName = "transaction_table", primaryKeys = ["transactionHash", "userRegistrationId"])
 data class Transaction(
@@ -12,5 +13,6 @@ data class Transaction(
     val type: String,
     val amount: Double,
     val partnerHash: String,
-    val date: Date,
+    @TypeConverters(Converters::class)
+    val date: Instant?,
 )
