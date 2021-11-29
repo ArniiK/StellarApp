@@ -18,6 +18,7 @@ import com.example.finalassignment.roomdb.ActiveUser
 import com.example.finalassignment.roomdb.ActiveUserViewModel
 import com.example.finalassignment.roomdb.UserRegistration
 import com.example.finalassignment.roomdb.UserRegistrationViewModel
+import com.example.finalassignment.singleton.ActiveUserSingleton
 import org.stellar.sdk.KeyPair
 import javax.crypto.SecretKey
 
@@ -171,6 +172,7 @@ class PinFragment : DialogFragment(), View.OnClickListener {
         if (isPinCorrect == true){
             val activeUser = ActiveUser(user!!.id, "Y")
             mActiveUserViewModel.addActiveUser(activeUser)
+            initActiveUserToSingleton(user)
             Toast.makeText(requireContext(),"Succesfully logged in",Toast.LENGTH_LONG).show()
 
             dialog?.cancel()        //zavriem dialog
@@ -179,6 +181,14 @@ class PinFragment : DialogFragment(), View.OnClickListener {
         }
         else Toast.makeText(activity,"Incorrect pin or private key, try again", Toast.LENGTH_LONG).show()
 
+    }
+
+    private fun initActiveUserToSingleton(user: UserRegistration) {
+        ActiveUserSingleton.id = user.id
+        ActiveUserSingleton.iv = user.iv
+        ActiveUserSingleton.privateKey = user.privateKey
+        ActiveUserSingleton.publicKey = user.publicKey
+        ActiveUserSingleton.salt = user.salt
     }
 
     private fun confirmTransactionSend(recipientPublicKey: String?, amount: String?){
