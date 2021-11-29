@@ -7,7 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalassignment.databinding.FragmentHistoryBinding
+import org.stellar.sdk.*
+import org.stellar.sdk.AbstractTransaction.MIN_BASE_FEE
 import java.util.*
+import org.stellar.sdk.responses.SubmitTransactionResponse
+
+import org.stellar.sdk.responses.AccountResponse
+import java.lang.Exception
 
 
 class HistoryFragment : Fragment() {
@@ -27,9 +33,9 @@ class HistoryFragment : Fragment() {
         binding = FragmentHistoryBinding.inflate(inflater)
         val view = binding.root
 
-        val transactionList: MutableList<Transaction> =
+        val transactionDataList: MutableList<TransactionData> =
             mutableListOf(
-                Transaction(
+                TransactionData(
                     "+",
                     "Jozo",
                     23.45,
@@ -38,7 +44,7 @@ class HistoryFragment : Fragment() {
                         10),
                     "EUR"
                 ),
-                Transaction(
+                TransactionData(
                     "-",
                     "Peto",
                     43.25,
@@ -47,7 +53,7 @@ class HistoryFragment : Fragment() {
                         10),
                     "USD"
                 ),
-                Transaction(
+                TransactionData(
                     "-",
                     "Fero",
                     13.00,
@@ -58,10 +64,11 @@ class HistoryFragment : Fragment() {
                 )
             )
 
-        transactionAdapter = TransactionAdapter(transactionList)
+        transactionAdapter = TransactionAdapter(transactionDataList)
 
         binding.rvTransactionHistory.adapter = transactionAdapter
         binding.rvTransactionHistory.layoutManager = LinearLayoutManager(activity)
+
         return view
     }
 }
