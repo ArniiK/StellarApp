@@ -4,11 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
 
-@Entity(tableName = "transaction_table")
+@Entity(tableName = "transaction_table", primaryKeys = ["transactionHash", "userRegistrationId"])
 data class Transaction(
 
-    @PrimaryKey(autoGenerate = true)
-    val id: Int,
     val transactionHash: String,
     val userRegistrationId: Int,
     val type: String,
