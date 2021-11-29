@@ -7,6 +7,7 @@ import org.stellar.sdk.*
 import org.stellar.sdk.responses.AccountResponse
 import org.stellar.sdk.responses.SubmitTransactionResponse
 import org.stellar.sdk.responses.operations.OperationResponse
+import org.stellar.sdk.responses.operations.PaymentOperationResponse
 import java.io.InputStream
 import java.net.URL
 import java.util.*
@@ -30,86 +31,101 @@ object StellarService {
         return keyPair
     }
 
-    suspend fun getTransactionsByPublicKey(publicKey: String): ArrayList<OperationResponse> {
-        val keyPair: KeyPair =
-            KeyPair.fromAccountId(publicKey)
+    suspend fun getTransactionsByPublicKey(publicKey: String): ArrayList<PaymentOperationResponse> {
+        val payments = arrayListOf<PaymentOperationResponse>()
 
-        val response = server.payments().forAccount(keyPair.accountId).execute()
-        return response.records
+        val waitFor = CoroutineScope(Dispatchers.IO).async {
+            val keyPair: KeyPair =
+                KeyPair.fromAccountId(publicKey)
+
+            val response = server.payments().forAccount(keyPair.accountId).execute()
+
+            for (record in response.records) {
+                if (record is PaymentOperationResponse) {
+                    payments.add(record)
+                }
+            }
+            return@async payments
+        }
+        waitFor.await()
+        return payments
     }
 
     suspend fun getBalanceByPublicKey(publicKey: String): Double {
-        val keyPair: KeyPair =
-            KeyPair.fromAccountId(publicKey)
+        var accountBalance: Double = 0.00
 
-        val account: AccountResponse = server.accounts().account(keyPair.getAccountId())
-        for (balance in account.balances) {
-            if (balance.assetType == "native"){
-                return balance.balance.toDouble()
+        val waitFor = CoroutineScope(Dispatchers.IO).async {
+            val keyPair: KeyPair =
+                KeyPair.fromAccountId(publicKey)
+
+            val account: AccountResponse = server.accounts().account(keyPair.getAccountId())
+            for (balance in account.balances) {
+                if (balance.assetType == "native"){
+                    accountBalance = balance.balance.toDouble()
+                    return@async accountBalance
+                }
             }
         }
-        return 0.00
+        waitFor.await()
+        return accountBalance
     }
 
     suspend fun checkAccountExists(publicKey: String): Boolean {
         var exists = true
-        try {
-            val destination: KeyPair = KeyPair.fromAccountId(publicKey)
-            server.accounts().account(destination.getAccountId())
-        } catch (e: Exception) {
-            exists = false
+
+        val waitFor = CoroutineScope(Dispatchers.IO).async {
+            try {
+                val destination: KeyPair = KeyPair.fromAccountId(publicKey)
+                server.accounts().account(destination.getAccountId())
+            } catch (e: Exception) {
+                exists = false
+            }
+            return@async exists
         }
+        waitFor.await()
         return exists
     }
 
 
     suspend fun sendTransaction(source: String, destination: String, amount: Double): Boolean {
-        var successful: Boolean = true
+        var successful: Boolean = false
 
-        val source: KeyPair =
-            KeyPair.fromSecretSeed(source)
-        val destination: KeyPair =
-            KeyPair.fromAccountId(destination)
+        val waitFor = CoroutineScope(Dispatchers.IO).async {
+            val source: KeyPair =
+                KeyPair.fromSecretSeed(source)
+            val destination: KeyPair =
+                KeyPair.fromAccountId(destination)
 
 
-        server.accounts().account(destination.getAccountId())
+            server.accounts().account(destination.getAccountId())
 
-        val sourceAccount: AccountResponse = server.accounts().account(source.getAccountId())
+            val sourceAccount: AccountResponse = server.accounts().account(source.getAccountId())
 
-        val transaction = Transaction.Builder(sourceAccount, Network.TESTNET)
-            .addOperation(
-                PaymentOperation.Builder(
-                    destination.getAccountId(),
-                    AssetTypeNative(),
-                    amount.toString()
-                ).build()
-            )
-            .setTimeout(180)
-            .setBaseFee(Transaction.MIN_BASE_FEE)
-            .build()
-
-        transaction.sign(source)
-
-        try {
-            val response: SubmitTransactionResponse = server.submitTransaction(transaction)
-            println("Success!")
-            println(response)
-            val account: AccountResponse = server.accounts().account(destination.getAccountId())
-            System.out.println("Balances for account " + destination.getAccountId())
-            for (balance in account.balances) {
-                System.out.printf(
-                    "Type: %s, Code: %s, Balance: %s%n",
-                    balance.assetType,
-                    balance.assetCode,
-                    balance.balance
+            val transaction = Transaction.Builder(sourceAccount, Network.TESTNET)
+                .addOperation(
+                    PaymentOperation.Builder(
+                        destination.getAccountId(),
+                        AssetTypeNative(),
+                        amount.toString()
+                    ).build()
                 )
+                .setTimeout(180)
+                .setBaseFee(Transaction.MIN_BASE_FEE)
+                .build()
 
+            transaction.sign(source)
+
+            try {
+                val response: SubmitTransactionResponse = server.submitTransaction(transaction)
+                if (response.isSuccess) {
+                    successful = true
+                }
+            } catch (e: Exception) {
+                successful = false
             }
-            val payments = server.payments().forAccount(destination.getAccountId()).execute()
-            println(payments)
-        } catch (e: Exception) {
-            successful = false
+            return@async successful
         }
+        waitFor.await()
         return successful
     }
 }
