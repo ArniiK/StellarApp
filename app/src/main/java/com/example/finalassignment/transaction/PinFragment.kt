@@ -196,44 +196,39 @@ class PinFragment : DialogFragment(), View.OnClickListener {
 
         var isPinCorrect = false
 
-
-
         //vytiahnem prihlaseneho usera z dbs ...
-
+        val user: ActiveUserSingleton = ActiveUserSingleton
 
         //z daneho usera ziskam data
-//        if (user!= null)
-//        {
-//            //salt z dbs
-//            val salt: ByteArray? = user.salt
-//            //iv z dbs
-//            val inicializationVector: ByteArray? = user.iv
-//            //toto je privateKey(zasifrovany) z dbs
-//            val encryptedSenderPrivateKeyFromDB: String? = user.privateKey
-//
-//            val senderPublicKeyFromDB: String? = user.publicKey
-//
-//
-//            val e = Encryption()
-//            //zahashujem novozadany pin pomocou saltu z dbs
-//            val secretKey: SecretKey = e.hashPinLogin(salt, pinCode)
-//
-//            // prazdny object
-//            var hped = HashedPinEncryptedData()
-//            hped.encryptedText = encryptedSenderPrivateKeyFromDB
-//            hped.hashedPin = secretKey
-//
-//            val decryptedPrivateKey = e.decrypt(hped, inicializationVector)
-//
-//            val source = KeyPair.fromSecretSeed(decryptedPrivateKey)
-//            val senderPublicKeyFromDecryption = source.accountId
-//
-//            //skontrolujem ci sa novy publicKey ziskany z desifrovaneho(pomocou zadaneho pinu) privateKey, rovna public Key z databazy pre prihlaseneho usera
-//            if(senderPublicKeyFromDecryption.equals(senderPublicKeyFromDB)) {
-//                isPinCorrect = true
-//
-//            }
-//        }
+        //salt z dbs
+        val salt: ByteArray? = user.salt
+        //iv z dbs
+        val inicializationVector: ByteArray? = user.iv
+        //toto je privateKey(zasifrovany) z dbs
+        val encryptedSenderPrivateKeyFromDB: String? = user.privateKey
+
+        val senderPublicKeyFromDB: String? = user.publicKey
+
+
+        val e = Encryption()
+        //zahashujem novozadany pin pomocou saltu z dbs
+        val secretKey: SecretKey = e.hashPinLogin(salt, pinCode)
+
+        // prazdny object
+        var hped = HashedPinEncryptedData()
+        hped.encryptedText = encryptedSenderPrivateKeyFromDB
+        hped.hashedPin = secretKey
+
+        val decryptedPrivateKey = e.decrypt(hped, inicializationVector)
+
+        val source = KeyPair.fromSecretSeed(decryptedPrivateKey)
+        val senderPublicKeyFromDecryption = source.accountId
+
+        //skontrolujem ci sa novy publicKey ziskany z desifrovaneho(pomocou zadaneho pinu) privateKey, rovna public Key z databazy pre prihlaseneho usera
+        if(senderPublicKeyFromDecryption.equals(senderPublicKeyFromDB)) {
+            isPinCorrect = true
+
+        }
 
         if (isPinCorrect == true){
 
