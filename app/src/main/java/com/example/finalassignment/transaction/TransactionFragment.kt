@@ -10,8 +10,14 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.example.finalassignment.R
+import com.example.finalassignment.StellarService
 import com.example.finalassignment.databinding.FragmentTransactionBinding
 import com.example.finalassignment.partners.BeneficiariesFragment
+import kotlinx.coroutines.*
+import org.stellar.sdk.*
+import org.stellar.sdk.responses.AccountResponse
+import org.stellar.sdk.responses.SubmitTransactionResponse
+import java.lang.Exception
 import java.security.PublicKey
 
 
@@ -20,7 +26,6 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
     private lateinit var partnersBtn: ImageButton
     private lateinit var spendBtn: Button
     private lateinit var binding: FragmentTransactionBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,13 +54,18 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
 
         when(v){
             binding.PKInputField.enterPartnersButton -> openPartnersDialog()
-            binding.sendTransactionButton -> performTransaction()
+            binding.sendTransactionButton -> performTransactionScope()
         }
 
     }
 
-    private fun performTransaction(){
+    private fun performTransactionScope(){
+        GlobalScope.launch(Dispatchers.Main) {
+            performTransaction()
+        }
+    }
 
+    private suspend fun performTransaction(){
         if (verifyTransaction()){
 
 
@@ -88,7 +98,7 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
 
     }
 
-    private fun verifyTransaction(): Boolean{     //skontroluj zostatok, skontroluj, ci existuje moj ucet, jeho ucet, otvor zadanie pinu
+    private suspend fun verifyTransaction(): Boolean{     //skontroluj zostatok, skontroluj, ci existuje moj ucet, jeho ucet, otvor zadanie pinu
 
         //TODO nepouzivat zobrazeny balance, treba zo stellaru natiahnut, ten je aktualny
         if(binding.walletBalanceTextView.text.toString().toDoubleOrNull() != null) {
@@ -110,7 +120,6 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
                     //balance sufficient, perform account existance check
 
                         if (!binding.PKInputField.beneficiaryPKInputText.text.toString().isEmpty()){
-
                             if (checkAccountExist(binding.PKInputField.beneficiaryPKInputText.text.toString())) {
 
                                 // state of sufficient balance and existing recipient account
@@ -149,11 +158,8 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
         }
     }
 
-    private fun checkAccountExist(publicKey: String) :Boolean{
-
-        //TODO check if account exists on stellar network
-
-        return true
+    private suspend fun checkAccountExist(publicKey: String) :Boolean{
+        return StellarService.checkAccountExists(publicKey)
     }
 
     private fun checkAccountNotEmpty(publicKey: String) :Boolean{
@@ -179,8 +185,7 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
         else  Toast.makeText(activity, "Transaction error - not executed", Toast.LENGTH_LONG).show()
     }
 
-    fun getBalance(publicKey: PublicKey): Double{
-
+    fun getActiveUserBalance(): Double {
         return 1000.toDouble()
     }
 
