@@ -58,7 +58,17 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
 
         if (verifyTransaction()){
 
+
+            val publicKey = binding.PKInputField.beneficiaryPKInputText.text.toString()
+            val amount = binding.sumToPayNumberDec.text.toString()
+
             val dialog = PinFragment()
+            var args: Bundle? = Bundle()
+
+            args?.putString("publicKey", publicKey)
+            args?.putString("amount", amount)
+            dialog.setArguments(args)
+
             dialog.setOnTransactionConfirmedListener(this)
             dialog.show(activity?.supportFragmentManager!!, "PinDialog")
             Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()
