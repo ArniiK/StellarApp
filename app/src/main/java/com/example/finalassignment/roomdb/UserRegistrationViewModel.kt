@@ -5,12 +5,13 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.example.finalassignment.cryptography.Encryption
-import com.example.finalassignment.cryptography.HashedPinEncryptedData
+import com.example.finalassignment.StellarService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.stellar.sdk.KeyPair
-import javax.crypto.SecretKey
+import java.time.Instant
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class UserRegistrationViewModel(application: Application): AndroidViewModel(application) {
     val getAllUsers: LiveData<List<UserRegistration>>
@@ -27,6 +28,12 @@ class UserRegistrationViewModel(application: Application): AndroidViewModel(appl
     fun addUser(userRegistration: UserRegistration){
         viewModelScope.launch (Dispatchers.IO){
             repository.addUser(userRegistration)
+        }
+    }
+
+    fun addTransaction(transaction: Transaction) {
+        viewModelScope.launch (Dispatchers.IO){
+            repository.addTransaction(transaction)
         }
     }
     fun tryToLogin(privateKey: String?, pinCode: String ) : Boolean? {
@@ -66,4 +73,65 @@ class UserRegistrationViewModel(application: Application): AndroidViewModel(appl
 
     }
 
+    fun updateBalance(user: LiveData<UserRegistration>) {
+        viewModelScope.launch (Dispatchers.IO) {
+            val userId = user.value?.id
+            val balance = user.value?.let { StellarService.getBalanceByPublicKey(it.publicKey) }
+            if (balance != null && userId != null) {
+                repository.updateBalanceByUserId(userId, balance)
+            }
+        }
+    }
+
+    fun updateTransactions(user: LiveData<UserRegistration>) {
+        viewModelScope.launch (Dispatchers.IO) {
+            val userId = user.value?.id
+            val transactions = user.value?.let { StellarService.getTransactionsByPublicKey(it.publicKey) }
+            val publicKey = user.value?.publicKey
+            if (transactions != null && publicKey != null && userId != null) {
+                for (transaction in transactions) {
+                    if (transaction.isTransactionSuccessful == true) {
+                        val date = Instant.parse(transaction.createdAt)
+                        var transactionType : String
+                        var partnerHash : String
+                        if (transaction.from == publicKey) {
+                            transactionType = "debit"
+                            partnerHash = transaction.to
+                        }
+                        else {
+                            transactionType = "credit"
+                            partnerHash = transaction.from
+                        }
+
+                        val newTransaction = Transaction(
+                            transactionHash = transaction.transactionHash,
+                            userRegistrationId = userId,
+                            type = transactionType,
+                            amount = transaction.amount.toDouble(),
+                            partnerHash = partnerHash,
+                            date = date,
+                        )
+
+                        repository.addTransaction(newTransaction)
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateUserById(userId: Int) {
+        viewModelScope.launch (Dispatchers.IO) {
+            val user = repository.getUserById(userId)
+            updateBalance(user)
+            updateTransactions(user)
+        }
+    }
+
+    fun updateUserByPublicKey(publicKey: String) {
+        viewModelScope.launch (Dispatchers.IO) {
+            val user = repository.getUserByPublicId(publicKey)
+            updateBalance(user)
+            updateTransactions(user)
+        }
+    }
 }

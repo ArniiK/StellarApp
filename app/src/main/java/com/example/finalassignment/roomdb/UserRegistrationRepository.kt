@@ -28,7 +28,7 @@ class UserRegistrationRepository(
     suspend fun addTransaction(transaction: Transaction){
         transactionDAO.addTransaction(transaction)
     }
-    suspend fun getTransactionsForUserId(userId: Int): LiveData<Transaction> {
+    suspend fun getTransactionsForUserId(userId: Int): LiveData<List<Transaction>> {
         return transactionDAO.getTransactionsForUserId(userId)
     }
 }
