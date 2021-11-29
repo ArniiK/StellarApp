@@ -68,7 +68,7 @@ class Encryption {
 //        BadPaddingException::class,
 //        IllegalBlockSizeException::class
 //    )
-    fun decrypt(data: HashedPinEncryptedData, iv: ByteArray): String? {
+    fun decrypt(data: HashedPinEncryptedData, iv: ByteArray?): String? {
         try {
             val cipher = Cipher.getInstance(ALGORITHM)
 

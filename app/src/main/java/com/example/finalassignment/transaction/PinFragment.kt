@@ -1,7 +1,5 @@
 package com.example.finalassignment.transaction
 
-import android.annotation.SuppressLint
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,11 +19,6 @@ import com.example.finalassignment.roomdb.ActiveUserViewModel
 import com.example.finalassignment.roomdb.UserRegistration
 import com.example.finalassignment.roomdb.UserRegistrationViewModel
 import org.stellar.sdk.KeyPair
-import org.stellar.sdk.Server
-import org.stellar.sdk.responses.AccountResponse
-import java.io.InputStream
-import java.net.URL
-import java.util.*
 import javax.crypto.SecretKey
 
 
@@ -34,16 +27,24 @@ class PinFragment : DialogFragment(), View.OnClickListener {
     private lateinit var binding:FragmentPinBinding
     private lateinit var listener: OnTransactionConfirmedListener
     private var privateKey: String? = null
+    private var recipientPublicKey: String? = null
+    private var amount: String? = null
     private lateinit var mUserRegistrationViewModel: UserRegistrationViewModel
     private lateinit var mActiveUserViewModel: ActiveUserViewModel
     private var test: List<UserRegistration> = emptyList()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
             val receivedArgs = getArguments()
             if (receivedArgs != null) {
-                privateKey = receivedArgs.getString("privateKey")
+                if(receivedArgs.getString("privateKey")!=null){
+                    privateKey = receivedArgs.getString("privateKey")
+                }else if (receivedArgs.getString("publicKey")!=null){
+                    recipientPublicKey = receivedArgs.getString("publicKey")
+                    amount = receivedArgs.getString("amount")
+                }
             }
 
 
@@ -68,12 +69,21 @@ class PinFragment : DialogFragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
+        if (privateKey!=null){
+            when(v){
+                binding.pinConfirmButton -> confirmTransactionLogin(privateKey)
+                binding.pinDismissButton -> closeTransaction()
+            }
+            privateKey = null
 
-        when(v){
-
-            binding.pinConfirmButton -> confirmTransaction(privateKey)
-            binding.pinDismissButton -> closeTransaction()
+        }else if(recipientPublicKey != null){
+            when(v){
+                binding.pinConfirmButton -> confirmTransactionSend(recipientPublicKey, amount)
+                binding.pinDismissButton -> closeTransaction()
+            }
+            recipientPublicKey = null
         }
+
     }
 //
 //    class CreateAcc(): AsyncTask<Unit, Unit, Unit>(), ViewModelStoreOwner, LifecycleOwner {
@@ -102,7 +112,7 @@ class PinFragment : DialogFragment(), View.OnClickListener {
 //    }
 
 
-    private fun confirmTransaction(privateKey: String?){
+    private fun confirmTransactionLogin(privateKey: String?){
         val pinCode = binding.editTextNumberPassword.text.toString()
 
 
@@ -168,6 +178,67 @@ class PinFragment : DialogFragment(), View.OnClickListener {
             listener.onTransactionConfirmed()
         }
         else Toast.makeText(activity,"Incorrect pin or private key, try again", Toast.LENGTH_LONG).show()
+
+    }
+
+    private fun confirmTransactionSend(recipientPublicKey: String?, amount: String?){
+        val pinCode = binding.editTextNumberPassword.text.toString()
+
+        var isPinCorrect = false
+
+
+
+        //vytiahnem prihlaseneho usera z dbs ...
+
+
+        //z daneho usera ziskam data
+//        if (user!= null)
+//        {
+//            //salt z dbs
+//            val salt: ByteArray? = user.salt
+//            //iv z dbs
+//            val inicializationVector: ByteArray? = user.iv
+//            //toto je privateKey(zasifrovany) z dbs
+//            val encryptedSenderPrivateKeyFromDB: String? = user.privateKey
+//
+//            val senderPublicKeyFromDB: String? = user.publicKey
+//
+//
+//            val e = Encryption()
+//            //zahashujem novozadany pin pomocou saltu z dbs
+//            val secretKey: SecretKey = e.hashPinLogin(salt, pinCode)
+//
+//            // prazdny object
+//            var hped = HashedPinEncryptedData()
+//            hped.encryptedText = encryptedSenderPrivateKeyFromDB
+//            hped.hashedPin = secretKey
+//
+//            val decryptedPrivateKey = e.decrypt(hped, inicializationVector)
+//
+//            val source = KeyPair.fromSecretSeed(decryptedPrivateKey)
+//            val senderPublicKeyFromDecryption = source.accountId
+//
+//            //skontrolujem ci sa novy publicKey ziskany z desifrovaneho(pomocou zadaneho pinu) privateKey, rovna public Key z databazy pre prihlaseneho usera
+//            if(senderPublicKeyFromDecryption.equals(senderPublicKeyFromDB)) {
+//                isPinCorrect = true
+//
+//            }
+//        }
+
+        if (isPinCorrect == true){
+
+            Toast.makeText(requireContext(),"Succesfully confirmed",Toast.LENGTH_LONG).show()
+
+            //vykonaj tranzakciu
+
+
+
+
+            dialog?.cancel()        //zavriem dialog
+            //previest tranzakciu v transaction fragment, ak sa podari, toast ze sa podarila, ak nie tak ze sa nepodarila, znovunacitanie zostatku a jeho refresh
+            listener.onTransactionConfirmed()
+        }
+        else Toast.makeText(activity,"Incorrect pin, try again", Toast.LENGTH_LONG).show()
 
     }
 
