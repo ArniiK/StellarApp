@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".transaction.partners.AddPartnerFragment">
-
+    tools:context=".transaction.PinFragment"
+    >
 
     <data>
 
         <variable
-            name="addingViewmodel"
+            name="transactionViewModel"
             type="com.example.finalassignment.transaction.TransactionViewModel" />
 
-        </data>
+    </data>
+
+
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        >
 
 
         <TextView
-            android:id="@+id/textView7"
+            android:id="@+id/pinHeadingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
-            android:text="Add partner"
+            android:text="Insert your PIN"
             android:textColor="@color/purple_500"
             android:textSize="30sp"
             android:textStyle="bold"
@@ -34,32 +38,32 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/dismissButton"
+            android:id="@+id/pinDismissButton"
             android:layout_width="111dp"
             android:layout_height="42dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="52dp"
             android:layout_marginEnd="72dp"
             android:background="@color/alertRed"
             android:text="leave tab"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/addPartnerPkEdittext" />
+            app:layout_constraintTop_toBottomOf="@+id/editTextNumberPassword" />
 
         <Button
-            android:id="@+id/addPartnerButton"
+            android:id="@+id/pinConfirmButton"
             style="@style/Widget.AppCompat.Button"
             android:layout_width="111dp"
             android:layout_height="42dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="52dp"
             android:background="@color/purple_700"
-            android:text="add"
-            android:onClick="@{() -> addingViewmodel.onPartnerAdd()}"
-            app:layout_constraintBottom_toBottomOf="@+id/dismissButton"
-            app:layout_constraintEnd_toStartOf="@+id/dismissButton"
+            android:text="Confirm"
+            android:onClick="@{() -> transactionViewModel.onPinConfirm()}"
+            app:layout_constraintBottom_toBottomOf="@+id/pinDismissButton"
+            app:layout_constraintEnd_toStartOf="@+id/pinDismissButton"
             app:layout_constraintHorizontal_bias="0.545"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/addPartnerPkEdittext"
+            app:layout_constraintTop_toBottomOf="@+id/editTextNumberPassword"
             app:layout_constraintVertical_bias="0.397" />
 
         <Space
@@ -67,51 +71,29 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.476"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/addPartnerButton"
+            app:layout_constraintTop_toBottomOf="@+id/pinConfirmButton"
             android:layout_width="390dp"
             android:layout_height="41dp"
             tools:layout_editor_absoluteX="91dp"
             tools:layout_editor_absoluteY="430dp" />
 
         <EditText
-            android:id="@+id/addPartnerNicknameEdittext"
+            android:id="@+id/editTextNumberPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLength="4"
             android:layout_marginTop="52dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:hint="Partner nickname"
-            android:text="@={addingViewmodel._partnerAddingNickname}"
+            android:hint="4 digits"
+            android:text="@={transactionViewModel._pin}"
             android:textAlignment="center"
+            android:ems="10"
+            android:inputType="numberPassword"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView7" />
+            app:layout_constraintTop_toBottomOf="@+id/pinHeadingText" />
 
-        <EditText
-            android:id="@+id/addPartnerPkEdittext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:hint="Public key"
-            android:text="@={addingViewmodel._partnerAddingKey}"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/addPartnerNicknameEdittext" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-
-
-
-
 
 
 </layout>

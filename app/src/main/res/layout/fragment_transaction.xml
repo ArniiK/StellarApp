@@ -4,14 +4,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
     tools:context=".TransactionFragment"
     >
 
     <data>
 
         <variable
-            name="transaction_main"
-            type="com.example.finalassignment.transaction.TransactionFragment" />
+            name="transactionViewModel"
+            type="com.example.finalassignment.transaction.TransactionViewModel" />
 
     </data>
 
@@ -26,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="64dp"
-            android:text="Your XLM wallet balance"
+            android:text="Your XLM wallet"
             android:textColor="@color/purple_500"
             android:textSize="30sp"
             android:textStyle="bold"
@@ -45,7 +46,7 @@
             android:id="@+id/walletBalanceTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1000"
+            android:text="@{transactionViewModel.balance}"
             android:textSize="45sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline2"
             app:layout_constraintEnd_toEndOf="parent"
@@ -71,6 +72,7 @@
             android:layout_marginTop="32dp"
             android:ems="10"
             android:hint="Enter SUM"
+            android:text="@={transactionViewModel._amount}"
             android:inputType="numberDecimal"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
@@ -95,6 +97,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/purple_500"
+            android:onClick="@{() -> transactionViewModel.validateTransaction()}"
             android:text="Spend"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -102,7 +105,7 @@
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/PKrecipientLayout"
-            app:layout_constraintVertical_bias="0.352" />
+            app:layout_constraintVertical_bias="0.376" />
 
         <LinearLayout
             android:id="@+id/PKrecipientLayout"
@@ -118,7 +121,9 @@
 
             <include
                 android:id="@+id/PKInputField"
-                layout="@layout/text_view_beneficiary" />
+                layout="@layout/text_view_beneficiary"
+                bind:transactionViewModel = "@{transactionViewModel}"
+                />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

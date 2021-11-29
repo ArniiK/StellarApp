@@ -7,7 +7,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".BeneficiariesFragment">
 
-
+    <data>
+        <variable
+            name="transactionViewModel"
+            type="com.example.finalassignment.transaction.TransactionViewModel"/>
+    </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"

@@ -1,6 +1,7 @@
 package com.example.finalassignment.transaction
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,28 +10,25 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.finalassignment.R
 import com.example.finalassignment.StellarService
 import com.example.finalassignment.databinding.FragmentTransactionBinding
-import com.example.finalassignment.partners.BeneficiariesFragment
-import kotlinx.coroutines.*
-import org.stellar.sdk.*
-import org.stellar.sdk.responses.AccountResponse
-import org.stellar.sdk.responses.SubmitTransactionResponse
-import java.lang.Exception
+import com.example.finalassignment.transaction.partners.BeneficiariesFragment
 import java.security.PublicKey
 
 
-class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragment.OnPartnerPKfetchedListener, PinFragment.OnTransactionConfirmedListener {
+class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragment.OnPartnerPKfetchedListener, TransactionPinFragment.OnTransactionConfirmedListener {
     // TODO: Rename and change types of parameters
     private lateinit var partnersBtn: ImageButton
     private lateinit var spendBtn: Button
     private lateinit var binding: FragmentTransactionBinding
+    private lateinit var viewModel :TransactionViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-
         }
     }
 
@@ -40,12 +38,56 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
     ): View? {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction,container, false)
+
+        viewModel = ViewModelProvider(this).get(TransactionViewModel::class.java)
+        binding.transactionViewModel = viewModel
+
+//        viewModel.eventTransactionSuccess.observe(viewLifecycleOwner, Observer <Boolean> {  transactionSuccessful ->
+//
+//            if (transactionSuccessful){
+//
+//                Toast.makeText(activity,"Transaction successful", Toast.LENGTH_LONG).show()
+//                viewModel
+//            }     // ak kontrola pozitivna, vypni dialog, preved transakciu
+//            else{
+//
+//                Toast.makeText(activity,"Incorrect pin, insert again", Toast.LENGTH_LONG).show()
+//            }
+//
+//        })
+
+
+        viewModel.eventValidationResponse.observe(viewLifecycleOwner, Observer<ValidationResponse>{ response ->
+
+            if (response.isSuccess){
+
+                Toast.makeText(activity,response.message, Toast.LENGTH_LONG).show()
+                moveToPin()
+            }
+            else{
+
+             Toast.makeText(activity, response.message, Toast.LENGTH_LONG).show()
+            }
+        })
+
+        viewModel._partnerKey.observe(viewLifecycleOwner, Observer <String>{ pkPicked ->
+
+            binding.PKInputField.beneficiaryPKInputText.setText(pkPicked)
+
+        })
+
+
+
+
+
+
         val view = binding.root
 
-        partnersBtn = view.findViewById(R.id.enterPartnersButton)  //binding.PKInputField.enterPartnersButton
-        spendBtn = binding.sendTransactionButton
+        partnersBtn = binding.PKInputField.enterPartnersButton      //otvranie dialogu platobnych partnerov
         partnersBtn.setOnClickListener(this)
-        spendBtn.setOnClickListener(this)
+        //spendBtn = binding.sendTransactionButton
+
+       // spendBtn.setOnClickListener(this)
 
         return view
     }
@@ -54,37 +96,38 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
 
         when(v){
             binding.PKInputField.enterPartnersButton -> openPartnersDialog()
-            binding.sendTransactionButton -> performTransactionScope()
+            //binding.sendTransactionButton -> performTransaction()
         }
 
     }
 
-    private fun performTransactionScope(){
-        GlobalScope.launch(Dispatchers.Main) {
-            performTransaction()
-        }
+    private fun moveToPin(){
+        Toast.makeText(activity,"Moving to pin",Toast.LENGTH_LONG).show()
+//        val action = WrappingFragmentDirections.actionWrappingFragmentToPinFragment()
+//        view?.findNavController()?.navigate(action)
+        val dialog = TransactionPinFragment()
+        dialog.setOnTransactionConfirmedListener(this)
+        dialog.show(activity?.supportFragmentManager!!, "PinDialog")
     }
 
-    private suspend fun performTransaction(){
-        if (verifyTransaction()){
+    //TODO do live data pridat amount a publickey
+//    private fun performTransaction(){
+//
+//        if (verifyTransaction()){
+//
+//            val dialog = PinFragment()
+//            var args: Bundle? = Bundle()
+//
+//            args?.putString("publicKey", publicKey)
+//            args?.putString("amount", amount)
+//            dialog.setArguments(args)
+//
+//            dialog.setOnTransactionConfirmedListener(this)
+//            dialog.show(activity?.supportFragmentManager!!, "PinDialog")
+//    }
 
 
-            val publicKey = binding.PKInputField.beneficiaryPKInputText.text.toString()
-            val amount = binding.sumToPayNumberDec.text.toString()
 
-            val dialog = PinFragment()
-            var args: Bundle? = Bundle()
-
-            args?.putString("publicKey", publicKey)
-            args?.putString("amount", amount)
-            dialog.setArguments(args)
-
-            dialog.setOnTransactionConfirmedListener(this)
-            dialog.show(activity?.supportFragmentManager!!, "PinDialog")
-            Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()
-
-        }
-    }
 
     override fun onPartnerFetched(publicKey: String) {
         binding.PKInputField.beneficiaryPKInputText.setText(publicKey)
@@ -95,68 +138,11 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
         val dialog = BeneficiariesFragment()
         dialog.setOnPartnerPKfetchedListener(this)
         dialog.show(activity?.supportFragmentManager!!, "PartnersDialog")
+        //viewModel.on
 
     }
 
-    private suspend fun verifyTransaction(): Boolean{     //skontroluj zostatok, skontroluj, ci existuje moj ucet, jeho ucet, otvor zadanie pinu
 
-        //TODO nepouzivat zobrazeny balance, treba zo stellaru natiahnut, ten je aktualny
-        if(binding.walletBalanceTextView.text.toString().toDoubleOrNull() != null) {
-
-            if (!binding.sumToPayNumberDec.text.toString().isEmpty() && !binding.walletBalanceTextView.text.toString().isEmpty()) {    //ci je balance double cislo
-                //amount field not empty
-
-                val amount = binding.sumToPayNumberDec.text.toString().toDouble()
-
-                if (binding.walletBalanceTextView.text.toString()
-                        .toDouble() < binding.sumToPayNumberDec.text.toString().toDouble()
-                ) {
-                    // insufficient balance
-                    Toast.makeText(activity, "Insufficient balance", Toast.LENGTH_LONG).show()
-                    return false
-
-                } else {
-
-                    //balance sufficient, perform account existance check
-
-                        if (!binding.PKInputField.beneficiaryPKInputText.text.toString().isEmpty()){
-                            if (checkAccountExist(binding.PKInputField.beneficiaryPKInputText.text.toString())) {
-
-                                // state of sufficient balance and existing recipient account
-                                //PIN verification
-                                return true
-
-                            }
-                            //not existing account
-                            else {
-
-                                Toast.makeText(activity,"Recipient account not on stellar network", Toast.LENGTH_LONG).show()
-                                return false
-                            }
-
-                        }
-                    else{
-                            Toast.makeText(activity,"Recipient account field empty", Toast.LENGTH_LONG).show()
-                        return false
-                    }
-
-
-
-
-                }
-            } else {
-                // ammount field empty
-                Toast.makeText(activity, "Amount field empty", Toast.LENGTH_LONG).show()
-                return false
-
-            }
-        }
-        else{
-
-            Toast.makeText(activity, "Your balance is not double number", Toast.LENGTH_LONG).show()
-            return false
-        }
-    }
 
     private suspend fun checkAccountExist(publicKey: String) :Boolean{
         return StellarService.checkAccountExists(publicKey)
@@ -164,7 +150,7 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
 
     private fun checkAccountNotEmpty(publicKey: String) :Boolean{
 
-        if( binding.PKInputField.beneficiaryPKInputText.text.toString().isEmpty()){
+        if( binding.PKInputField.beneficiaryPKInputText.text.isEmpty()){
 
             return false
         }
@@ -173,20 +159,31 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
     }
 
 
-    override fun onTransactionConfirmed() {
-
-        //TODO tranzakcia
-        val transactionExecuted = true
-
-        if (transactionExecuted) {
-            //TODO refresh balance from stellar network
-            Toast.makeText(activity, "Your transaction was performed", Toast.LENGTH_LONG).show()
-        }
-        else  Toast.makeText(activity, "Transaction error - not executed", Toast.LENGTH_LONG).show()
-    }
+//    override fun onTransactionConfirmed() {
+//
+////        //TODO tranzakcia
+////        val transactionExecuted = true
+////
+////        if (transactionExecuted) {
+////            //TODO refresh balance from stellar network
+////            Toast.makeText(activity, "Your transaction was performed", Toast.LENGTH_LONG).show()
+////        }
+////        else  Toast.makeText(activity, "Transaction error - not executed", Toast.LENGTH_LONG).show()
+//    }
 
     fun getActiveUserBalance(): Double {
         return 1000.toDouble()
+    }
+
+    override fun onTransactionConfirmed() {
+        //        //TODO tranzakcia
+//        val transactionExecuted = true
+//
+//        if (transactionExecuted) {
+//            //TODO refresh balance from stellar network
+//            Toast.makeText(activity, "Your transaction was performed", Toast.LENGTH_LONG).show()
+//        }
+//        else  Toast.makeText(activity, "Transaction error - not executed", Toast.LENGTH_LONG).show()
     }
 
 }

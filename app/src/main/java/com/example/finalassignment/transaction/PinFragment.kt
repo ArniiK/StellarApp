@@ -38,15 +38,15 @@ class PinFragment : DialogFragment(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-            val receivedArgs = getArguments()
-            if (receivedArgs != null) {
-                if(receivedArgs.getString("privateKey")!=null){
-                    privateKey = receivedArgs.getString("privateKey")
-                }else if (receivedArgs.getString("publicKey")!=null){
-                    recipientPublicKey = receivedArgs.getString("publicKey")
-                    amount = receivedArgs.getString("amount")
-                }
+        val receivedArgs = getArguments()
+        if (receivedArgs != null) {
+            if(receivedArgs.getString("privateKey")!=null){
+                privateKey = receivedArgs.getString("privateKey")
+            }else if (receivedArgs.getString("publicKey")!=null){
+                recipientPublicKey = receivedArgs.getString("publicKey")
+                amount = receivedArgs.getString("amount")
             }
+        }
 
 
     }
