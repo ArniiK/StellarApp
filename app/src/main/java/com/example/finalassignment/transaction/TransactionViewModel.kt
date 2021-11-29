@@ -2,9 +2,12 @@ package com.example.finalassignment.transaction
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.*
-import com.example.finalassignment.roomdb.PartnerDAO
+import com.example.finalassignment.cryptography.Encryption
+import com.example.finalassignment.cryptography.HashedPinEncryptedData
 import com.example.finalassignment.roomdb.PartnerRepository
 import com.example.finalassignment.roomdb.UserRegistrationDatabase
 import com.example.finalassignment.transaction.partners.AllPartnersDBResponse
@@ -12,7 +15,10 @@ import com.example.finalassignment.transaction.partners.PartnerDBResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.example.finalassignment.roomdb.PartnerDB
+import com.example.finalassignment.singleton.ActiveUserSingleton
 import com.example.finalassignment.transaction.partners.Partner
+import org.stellar.sdk.KeyPair
+import javax.crypto.SecretKey
 
 class TransactionViewModel(application: Application) : AndroidViewModel(application) {      //view model pre transakciu a pin
 
@@ -276,12 +282,59 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
         if((getpin.value.toString().length == 4) && getpin.value.toString().isDigitsOnly()){    // field of 4 numbers
 
-            // TODO check the pin in DB, send response
-            //tento kod je provizorny
-            pinResponse.isSuccess = true
-            pinResponse.message = "Pin correct, transaction set"
-            _eventPinControlResponse.value = pinResponse
+//            val publicKey = getpublicKey.value
+//            val amount = getamount.value
 
+            val pinCode = getpin.value
+
+            var isPinCorrect = false
+
+            //vytiahnem prihlaseneho usera z dbs ...
+            val user: ActiveUserSingleton = ActiveUserSingleton
+
+            //z daneho usera ziskam data
+            //salt z dbs
+            val salt: ByteArray? = user.salt
+            //iv z dbs
+            val inicializationVector: ByteArray? = user.iv
+            //toto je privateKey(zasifrovany) z dbs
+            val encryptedSenderPrivateKeyFromDB: String? = user.privateKey
+
+            val senderPublicKeyFromDB: String? = user.publicKey
+
+
+            val e = Encryption()
+            //zahashujem novozadany pin pomocou saltu z dbs
+            val secretKey: SecretKey = e.hashPinLogin(salt, pinCode)
+
+            // prazdny object
+            var hped = HashedPinEncryptedData()
+            hped.encryptedText = encryptedSenderPrivateKeyFromDB
+            hped.hashedPin = secretKey
+
+            val decryptedPrivateKey = e.decrypt(hped, inicializationVector)
+
+            val source = KeyPair.fromSecretSeed(decryptedPrivateKey)
+            val senderPublicKeyFromDecryption = source.accountId
+
+            //skontrolujem ci sa novy publicKey ziskany z desifrovaneho(pomocou zadaneho pinu) privateKey, rovna public Key z databazy pre prihlaseneho usera
+            if(senderPublicKeyFromDecryption.equals(senderPublicKeyFromDB)) {
+                isPinCorrect = true
+
+            }
+
+            if (isPinCorrect == true){
+
+                pinResponse.isSuccess = true
+                pinResponse.message = "Pin correct, transaction"
+                _eventPinControlResponse.value = pinResponse
+            }
+            else{
+
+                pinResponse.isSuccess = false
+                pinResponse.message = "Pin icorrect, try again"
+                _eventPinControlResponse.value = pinResponse
+            }
         }
         else{
 
@@ -295,6 +348,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     fun performTransaction(){
 
         Log.d("transaction state", "PERFORMED")
+
     }
 
 

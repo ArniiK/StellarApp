@@ -27,8 +27,8 @@ class Encryption {
         return HashedPinEncryptedData(secretKeyHashedPin, salt)
     }
 
-    fun hashPinLogin(salt: ByteArray?, pin: String): SecretKey {
-        val spec = PBEKeySpec(pin.toCharArray(), salt, 1000, 256)
+    fun hashPinLogin(salt: ByteArray?, pin: String?): SecretKey {
+        val spec = PBEKeySpec(pin?.toCharArray(), salt, 1000, 256)
         val skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
         val hash = skf.generateSecret(spec).encoded
         val secretKeyHashedPin : SecretKey = SecretKeySpec(hash, ALGORITHM)
