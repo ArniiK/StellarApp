@@ -1,17 +1,34 @@
 package com.example.finalassignment.transaction
 
-import android.provider.Telephony
+import android.app.Application
 import android.util.Log
 import androidx.core.text.isDigitsOnly
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import com.example.finalassignment.roomdb.PartnerDAO
+import com.example.finalassignment.roomdb.PartnerRepository
+import com.example.finalassignment.roomdb.UserRegistrationDatabase
 import com.example.finalassignment.transaction.partners.AllPartnersDBResponse
-import com.example.finalassignment.transaction.partners.Partner
 import com.example.finalassignment.transaction.partners.PartnerDBResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import com.example.finalassignment.roomdb.PartnerDB
+import com.example.finalassignment.transaction.partners.Partner
 
-class TransactionViewModel : ViewModel() {      //view model pre transakciu a pin
+class TransactionViewModel(application: Application) : AndroidViewModel(application) {      //view model pre transakciu a pin
 
+
+    private val partnerRepository: PartnerRepository
+
+    init {
+        val partnerDAO =  UserRegistrationDatabase.getDatabase(application).partnerDAO()
+        partnerRepository = PartnerRepository(partnerDAO)
+    }
+
+    fun addPartner(partnerDB: PartnerDB ){
+        viewModelScope.launch (Dispatchers.IO){
+            partnerRepository.addPartner(partnerDB)
+        }
+    }
 
     var _publicKey = MutableLiveData<String>()
     val getpublicKey: LiveData<String> = _publicKey
