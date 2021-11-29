@@ -151,28 +151,23 @@ class PinFragment : DialogFragment(), View.OnClickListener {
 
             //hpedNew bude obsahovat po zbehnuti iba encryptedText->novozasifrovany text(privateKey) podla zahashovaneho pinu, ostatne atributy tu mas uz
             val hpedNew: HashedPinEncryptedData? = e.encrypt(privateKey, secretKey, inicializationVector, hped)
+            //skontrolujem ci sa novy encryptedText(zasifrovany privateKey) rovna tomu v dbs, ak ano prihlasim
             if(hpedNew?.encryptedText.equals(encryptedTextFromDB)) {
                 isPinCorrect = true
 
             }
         }
 
-
-
-        //skontrolujem ci sa novy encryptedText(zasifrovany privateKey) rovna tomu v dbs, ak ano prihlasim
-
-
-
         if (isPinCorrect == true){
             val activeUser = ActiveUser(user!!.id, "Y")
             mActiveUserViewModel.addActiveUser(activeUser)
-            Toast.makeText(requireContext(),"ASABACHALA SABACHALA SAUNDSKA ARABIA",Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(),"Succesfully logged in",Toast.LENGTH_LONG).show()
 
             dialog?.cancel()        //zavriem dialog
             //previest tranzakciu v transaction fragment, ak sa podari, toast ze sa podarila, ak nie tak ze sa nepodarila, znovunacitanie zostatku a jeho refresh
             listener.onTransactionConfirmed()
         }
-        else Toast.makeText(activity,"Incorrect pin, insert again", Toast.LENGTH_LONG).show()
+        else Toast.makeText(activity,"Incorrect pin or private key, try again", Toast.LENGTH_LONG).show()
 
     }
 

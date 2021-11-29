@@ -1,5 +1,8 @@
 package com.example.finalassignment
 
+import android.database.sqlite.SQLiteAbortException
+import android.database.sqlite.SQLiteConstraintException
+import android.database.sqlite.SQLiteException
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -28,6 +31,7 @@ import java.net.URL
 import java.util.*
 import com.example.finalassignment.cryptography.Encryption
 import com.example.finalassignment.cryptography.HashedPinEncryptedData
+import kotlin.jvm.Throws
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -91,7 +95,8 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
             }
             if (returnState.equals(1))
                 Toast.makeText(requireContext(),"Pin codes must be same.\nLength must be 4 or 6 digits.",Toast.LENGTH_LONG).show()
-
+            if (returnState.equals(2))
+                Toast.makeText(requireContext(),"User with this private key is already registered,\ntry another private key or log in",Toast.LENGTH_LONG).show()
         }
 
         loginClickable = binding.registrationClickableLoginText //klikatelny text na presun na login
@@ -103,7 +108,8 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
     /** Funkcia na pridanie do databazy
      * @return 0 -> pridalo uspnesne
      * @return 1 -> passwordy sa nezhoduju
-     * @return 2 TODO */
+     * @return 2 -> user s tymto privateKey uz je registrovany */
+    @Throws(SQLiteException::class,SQLiteConstraintException::class, SQLiteAbortException::class)
     private fun insertDataToDatabase():Int
     {
 
@@ -122,12 +128,17 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
 
         val source = KeyPair.fromSecretSeed(privateKey)
         val publicKey = source.accountId
+        try{
+            val userRegistration = UserRegistration(0, publicKey, hped.salt, hpedCompleted?.encryptedText, inicializationVector)
+            mUserRegistrationViewModel.addUser(userRegistration)
+//            return 0
 
-        val userRegistration = UserRegistration(0, publicKey, hped.salt, hpedCompleted?.encryptedText, inicializationVector)
-        mUserRegistrationViewModel.addUser(userRegistration)
-
+        }catch (e: Exception){
+            println("Error while creating entry in dbs: $e")
+            e.printStackTrace()
+            return 2
+        }
         return 0
-
     }
 
     override fun onClick(v: View?) {

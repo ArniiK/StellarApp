@@ -9,7 +9,7 @@ import androidx.room.Query
 @Dao
 interface UserRegistrationDAO {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addUser(userRegistration: UserRegistration)
 
     @Query("Select * from user_registration_table order by id ASC")

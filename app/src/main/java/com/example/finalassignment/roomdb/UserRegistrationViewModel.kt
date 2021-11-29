@@ -24,7 +24,6 @@ class UserRegistrationViewModel(application: Application): AndroidViewModel(appl
         getAllUsers = repository.getAllUsers
 
     }
-
     fun addUser(userRegistration: UserRegistration){
         viewModelScope.launch (Dispatchers.IO){
             repository.addUser(userRegistration)
