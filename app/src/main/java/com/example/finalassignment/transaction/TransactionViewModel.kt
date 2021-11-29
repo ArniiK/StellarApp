@@ -16,17 +16,32 @@ import com.example.finalassignment.transaction.partners.Partner
 
 class TransactionViewModel(application: Application) : AndroidViewModel(application) {      //view model pre transakciu a pin
 
-
+    val getAllPartners: LiveData<List<PartnerDB>>
+    var getPartnerByPK = MutableLiveData<PartnerDB>()
     private val partnerRepository: PartnerRepository
 
     init {
         val partnerDAO =  UserRegistrationDatabase.getDatabase(application).partnerDAO()
         partnerRepository = PartnerRepository(partnerDAO)
+        getAllPartners = partnerRepository.getAllPartners
     }
 
     fun addPartner(partnerDB: PartnerDB ){
         viewModelScope.launch (Dispatchers.IO){
             partnerRepository.addPartner(partnerDB)
+        }
+    }
+
+    fun deletePartner(partnerDB: PartnerDB){
+        viewModelScope.launch(Dispatchers.IO){
+            partnerRepository.deletePartner(partnerDB)
+        }
+    }
+
+    fun getPartnerByPK(pK: String){
+        val result = MutableLiveData<PartnerDB>()
+        viewModelScope.launch(Dispatchers.IO){
+            getPartnerByPK = partnerRepository.getPartnerByPK(pK) as MutableLiveData<PartnerDB>
         }
     }
 

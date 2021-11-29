@@ -7,7 +7,7 @@ import org.stellar.sdk.responses.AccountResponse
 @Dao
 interface UserRegistrationDAO {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addUser(userRegistration: UserRegistration)
 
     @Query("Select * from user_registration_table order by id ASC")
