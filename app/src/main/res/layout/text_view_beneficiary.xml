@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data>
+        <variable
+            name="transactionViewModel"
+            type="com.example.finalassignment.transaction.TransactionViewModel" />
+    </data>
+
+
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
     >
 
 
@@ -13,6 +26,7 @@
         android:layout_height="48dp"
         android:gravity="center"
         android:hint="Recipient address"
+        android:text="@={transactionViewModel._publicKey}"
         android:textAlignment="center"
         android:textSize="20sp" />
 
@@ -24,8 +38,9 @@
         android:layout_marginStart="24dp"
         android:layout_toEndOf="@id/beneficiaryPKInputText"
         android:background="@drawable/ic_contacts"
-        android:clickable="true"
-        />
+        android:clickable="true" />
 
 
 </RelativeLayout>
+
+</layout>

@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data>
+        <variable
+        name="transactionViewModel"
+        type="com.example.finalassignment.transaction.TransactionViewModel"/>
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/paConstraint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="1dp"
@@ -20,7 +29,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="4dp"
         android:layout_toStartOf="@+id/removeAccButton"
-        android:text="OX4545454PUBLICKEY"
+        android:text="public keyyy"
         android:textColor="@android:color/black"
         android:textSize="17sp"
         android:textStyle="bold"
@@ -34,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="19dp"
             android:layout_marginBottom="10dp"
-            android:text="Some nickname"
+            android:text="some nickname"
             android:textColor="@color/black"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -59,3 +68,5 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

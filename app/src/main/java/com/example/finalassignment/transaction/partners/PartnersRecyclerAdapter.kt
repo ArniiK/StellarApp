@@ -7,8 +7,9 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalassignment.databinding.PartnerAccountItemBinding
+import com.example.finalassignment.transaction.partners.Partner
 
-class PartnersRecyclerAdapter(private val itemList: MutableList<PartnerViewItem>):
+class PartnersRecyclerAdapter(private var itemList: MutableList<Partner> = mutableListOf<Partner>()):
     RecyclerView.Adapter<PartnersRecyclerAdapter.PartnersViewHolder>() {
 
     //ondeletelistener
@@ -18,9 +19,9 @@ class PartnersRecyclerAdapter(private val itemList: MutableList<PartnerViewItem>
     private var _binding:PartnerAccountItemBinding ?= null
     private val binding get() = _binding!!
 
-//TODO doimplementovat itemlistener na mazanie
+    //TODO doimplementovat itemlistener na mazanie
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PartnersViewHolder {
-       // val view = LayoutInflater.from(parent.context).inflate(R.layout.partner_account_item, parent, false)
+        // val view = LayoutInflater.from(parent.context).inflate(R.layout.partner_account_item, parent, false)
         _binding = PartnerAccountItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         val view = binding.root
 
@@ -30,52 +31,52 @@ class PartnersRecyclerAdapter(private val itemList: MutableList<PartnerViewItem>
     override fun onBindViewHolder(holder: PartnersViewHolder, position: Int) {
         val item = itemList[position]
         holder.pkTextView.text = item.publicKey
-        holder.nicknameView.text = item.nickname
+        holder.nicknameView.text = item.nickName
     }
 
     override fun getItemCount(): Int {
-       return itemList.size
+        return itemList.size
     }
 
-  inner  class PartnersViewHolder(itemView: View, delListener: OnDeleteItemListener, pickedListener: OnPartnerPickedListener) : RecyclerView.ViewHolder(itemView){
+    inner  class PartnersViewHolder(itemView: View, delListener: OnDeleteItemListener, pickedListener: OnPartnerPickedListener) : RecyclerView.ViewHolder(itemView){
 
 
         val pkTextView: TextView        // klikatelny text publik key partnera
         val nicknameView: TextView
         val removeBtn: ImageButton
 
-       init {
-           pkTextView =  binding.partnerAccountTextView       //itemView.findViewById(R.id.partnerAccountTextView)
-           nicknameView = binding.partnerNameTextView
-           removeBtn =  binding.removeAccButton        //itemView.findViewById(R.id.removeAccButton)
+        init {
+            pkTextView =  binding.partnerAccountTextView       //itemView.findViewById(R.id.partnerAccountTextView)
+            nicknameView = binding.partnerNameTextView
+            removeBtn =  binding.removeAccButton        //itemView.findViewById(R.id.removeAccButton)
 
 
-           removeBtn.setOnClickListener(object : View.OnClickListener{
+            removeBtn.setOnClickListener(object : View.OnClickListener{
 
-               override fun onClick(v: View?) {
+                override fun onClick(v: View?) {
 
-                   if (adapterPosition != RecyclerView.NO_POSITION){
+                    if (adapterPosition != RecyclerView.NO_POSITION){
 
-                       delListener.onDelete(adapterPosition)
-                   }
+                        delListener.onDelete(adapterPosition)
+                    }
 
-               }
-           })
+                }
+            })
 
-           pkTextView.setOnClickListener(object :View.OnClickListener{
+            pkTextView.setOnClickListener(object :View.OnClickListener{
 
-               override fun onClick(v: View?) {
-                   if (adapterPosition != RecyclerView.NO_POSITION){
+                override fun onClick(v: View?) {
+                    if (adapterPosition != RecyclerView.NO_POSITION){
 
-                       partnerPickedListener.onPartnerPicked(pkTextView.text.toString())
-                   }
+                        partnerPickedListener.onPartnerPicked(pkTextView.text.toString())
+                    }
 
-               }
-           })
-       }
+                }
+            })
+        }
 
 
-   }
+    }
 
     interface OnDeleteItemListener{
 
@@ -95,6 +96,11 @@ class PartnersRecyclerAdapter(private val itemList: MutableList<PartnerViewItem>
         this.partnerPickedListener = listener
     }
 
+    fun changePartnerList(itemList: MutableList<Partner>){
+
+        this.itemList = itemList
+
+    }
 
 
 }

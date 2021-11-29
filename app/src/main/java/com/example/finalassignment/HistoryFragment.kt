@@ -33,8 +33,9 @@ class HistoryFragment : Fragment() {
         binding = FragmentHistoryBinding.inflate(inflater)
         val view = binding.root
 
-        val transactionDataList: MutableList<TransactionData> =
-            mutableListOf(
+
+        val transactionList: MutableList<TransactionData>
+           = mutableListOf(
                 TransactionData(
                     "+",
                     "Jozo",
@@ -64,7 +65,7 @@ class HistoryFragment : Fragment() {
                 )
             )
 
-        transactionAdapter = TransactionAdapter(transactionDataList)
+        transactionAdapter = TransactionAdapter(transactionList)
 
         binding.rvTransactionHistory.adapter = transactionAdapter
         binding.rvTransactionHistory.layoutManager = LinearLayoutManager(activity)
