@@ -14,5 +14,6 @@ data class UserRegistration(
     val publicKey: String,
     val salt: ByteArray?,
     val privateKey: String?,
-    val iv: ByteArray?
+    val iv: ByteArray?,
+    val balance: Double?
 )

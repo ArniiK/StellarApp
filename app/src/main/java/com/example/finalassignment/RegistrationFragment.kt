@@ -129,7 +129,7 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
         val source = KeyPair.fromSecretSeed(privateKey)
         val publicKey = source.accountId
         try{
-            val userRegistration = UserRegistration(0, publicKey, hped.salt, hpedCompleted?.encryptedText, inicializationVector)
+            val userRegistration = UserRegistration(0, publicKey, hped.salt, hpedCompleted?.encryptedText, inicializationVector, 0.00)
             mUserRegistrationViewModel.addUser(userRegistration)
 //            return 0
 
