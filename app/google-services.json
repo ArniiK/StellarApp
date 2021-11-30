@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "583516181116",
+    "project_id": "androidstellarapp",
+    "storage_bucket": "androidstellarapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:583516181116:android:ae20bae823569a3e6ceff9",
+        "android_client_info": {
+          "package_name": "com.example.finalassignment"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "583516181116-tl6u0q8eopbj1td1nffdhes4dugo36de.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgSprRPpDlWMncePmQ09Ti9PzqOurYCRA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "583516181116-tl6u0q8eopbj1td1nffdhes4dugo36de.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

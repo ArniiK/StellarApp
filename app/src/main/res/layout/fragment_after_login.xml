@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<layout
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".AfterLogin">
 
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="70dp"
             android:layout_marginTop="150dp"
-            android:text="Your keys"
+            android:text="Your Public key:"
             android:textColor="@color/purple_500"
             android:textSize="20pt"
             android:textStyle="bold"
@@ -31,41 +31,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+
         <TextView
-            android:id="@+id/afterLoginSKTextView"
-            android:layout_width="wrap_content"
+            android:id="@+id/afterLoginPKTextView"
+            android:layout_width="335dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="90dp"
-            android:text="Secret key"
+            android:layout_marginTop="50dp"
             android:textColor="@color/white"
             android:textSize="20pt"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/afterLoginHeading" />
-
-        <Button
-            android:id="@+id/afterLoginCreateBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Create new account"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/afterLoginPKTextView" />
-
-        <TextView
-            android:id="@+id/afterLoginPKTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:textColor="@color/white"
-            android:textSize="20pt"
-            android:textStyle="bold"
-            android:text="Public key"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/afterLoginSKTextView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
