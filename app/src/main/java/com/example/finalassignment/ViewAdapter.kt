@@ -2,6 +2,7 @@ package com.example.finalassignment
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.finalassignment.history.HistoryFragment
 import com.example.finalassignment.transaction.TransactionFragment
 
 class ViewAdapter (fragment: Fragment) : FragmentStateAdapter(fragment){

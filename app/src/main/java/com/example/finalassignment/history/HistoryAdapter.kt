@@ -1,29 +1,30 @@
-package com.example.finalassignment
+package com.example.finalassignment.history
 
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalassignment.databinding.ItemTransactionBinding
+import com.example.finalassignment.roomdb.Transaction
 import java.text.SimpleDateFormat
 
-class TransactionAdapter (
-    private val transactionData: MutableList<TransactionData>
-    ) : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
+class HistoryAdapter (
+    private val transactionData: List<Transaction>
+    ) : RecyclerView.Adapter<HistoryAdapter.TransactionViewHolder>() {
 
     class TransactionViewHolder(private val itemBinding: ItemTransactionBinding) : RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(transactionData: TransactionData) {
+        fun bind(transaction: Transaction) {
             val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
-            itemBinding.tvDate.text = formatter.format(transactionData.date)
-            itemBinding.tvAmount.text = transactionData.amount.toString() + " " + transactionData.currency
-            itemBinding.tvName.text = transactionData.name
-            itemBinding.tvSign.text = transactionData.sign
+            itemBinding.tvDate.text = formatter.format(transaction.date)
+            itemBinding.tvAmount.text = transaction.amount.toString()
+            itemBinding.tvName.text = transaction.partnerHash
+            itemBinding.tvSign.text = transaction.type
 
-            if (transactionData.sign == "-") {
+            if (transaction.type == "-") {
                 itemBinding.tvSign.setTextColor(Color.RED)
                 itemBinding.tvAmount.setTextColor(Color.RED)
             }
-            if (transactionData.sign == "+") {
+            if (transaction.type == "+") {
                 itemBinding.tvSign.setTextColor(Color.GREEN)
                 itemBinding.tvAmount.setTextColor(Color.GREEN)
             }
