@@ -7,9 +7,10 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalassignment.databinding.PartnerAccountItemBinding
+import com.example.finalassignment.roomdb.PartnerDB
 import com.example.finalassignment.transaction.partners.Partner
 
-class PartnersRecyclerAdapter(private var itemList: MutableList<Partner> = mutableListOf<Partner>()):
+class PartnersRecyclerAdapter(private var itemList: List<PartnerDB> = mutableListOf<PartnerDB>()):
     RecyclerView.Adapter<PartnersRecyclerAdapter.PartnersViewHolder>() {
 
     //ondeletelistener
@@ -96,7 +97,7 @@ class PartnersRecyclerAdapter(private var itemList: MutableList<Partner> = mutab
         this.partnerPickedListener = listener
     }
 
-    fun changePartnerList(itemList: MutableList<Partner>){
+    fun changePartnerList(itemList: List<PartnerDB>){
 
         this.itemList = itemList
 

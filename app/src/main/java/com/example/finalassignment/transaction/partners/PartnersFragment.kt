@@ -16,6 +16,7 @@ import com.example.finalassignment.R
 import com.example.finalassignment.databinding.FragmentBeneficiariesBinding
 import com.example.finalassignment.databinding.PartnerAccountItemBinding
 import com.example.finalassignment.partners.PartnersRecyclerAdapter
+import com.example.finalassignment.roomdb.PartnerDB
 import com.example.finalassignment.transaction.TransactionViewModel
 import com.example.finalassignment.transaction.ValidationResponse
 
@@ -26,7 +27,7 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
 {
 
     private lateinit var binding: FragmentBeneficiariesBinding
-    private lateinit var itemlist: MutableList<Partner>
+    private lateinit var itemlist: List<PartnerDB>
     private lateinit var pKfetchedListener: OnPartnerPKfetchedListener
     private var adapter: PartnersRecyclerAdapter? = null
     private lateinit var transactionViewModel : TransactionViewModel
@@ -51,16 +52,25 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
         transactionViewModel = ViewModelProvider(this).get(TransactionViewModel::class.java)
         binding.transactionViewModel = transactionViewModel
 
-        transactionViewModel.eventPartnersFetched.observe(viewLifecycleOwner,{ dbPartnerListFetched ->
+//        transactionViewModel.eventPartnersFetched.observe(viewLifecycleOwner,{ dbPartnerListFetched ->
+//
+//            if (dbPartnerListFetched.isSuccess){
+//
+//                //ak sa podarilo nacitat partnerov z db, notifikuj adapter na zmenu obsahu recyclera
+//                changeItemList()
+//                //else chybova hlaska pre usera
+//            }else Toast.makeText(activity,dbPartnerListFetched.message,Toast.LENGTH_LONG).show()
+//
+//        })
 
-            if (dbPartnerListFetched.isSuccess){
 
-                //ak sa podarilo nacitat partnerov z db, notifikuj adapter na zmenu obsahu recyclera
-                changeItemList()
-                //else chybova hlaska pre usera
-            }else Toast.makeText(activity,dbPartnerListFetched.message,Toast.LENGTH_LONG).show()
+        transactionViewModel.getAllPartners.observe(viewLifecycleOwner, {
 
-        })
+            it ->
+            itemlist = it       //zmeni sa obsah partner db, zmen recycler
+            changeItemList()
+
+        } )
 
         transactionViewModel._partnerKey.observe(viewLifecycleOwner, Observer<String> { pkPicked ->
 
@@ -68,31 +78,32 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
 
         })
 
-        transactionViewModel.eventUserFromDBremoval.observe( viewLifecycleOwner, Observer<PartnerDBResponse>{
+//        transactionViewModel.eventUserFromDBremoval.observe( viewLifecycleOwner, Observer<PartnerDBResponse>{
+//
+//              response -> if (response.isSuccess){
+//
+//                        //zmazany z db, zmaz z recyclera
+//                        adapter?.notifyItemRemoved(response.position)
+//              }
+//            else Toast.makeText(activity,response.message,Toast.LENGTH_LONG).show() //ukaz chybovu spravu
+//
+//        }
+//        )
 
-              response -> if (response.isSuccess){
-
-                        //zmazany z db, zmaz z recyclera
-                        adapter?.notifyItemRemoved(response.position)
-              }
-            else Toast.makeText(activity,response.message,Toast.LENGTH_LONG).show() //ukaz chybovu spravu
-
-        }
-        )
-
-        transactionViewModel.eventPartnerToRecycler.observe(viewLifecycleOwner, Observer <Partner>{
-
-            response ->
-            Log.i("partner added", "recycler updating")
-            changeItemList()
-
-        })
+//        transactionViewModel.eventPartnerToRecycler.observe(viewLifecycleOwner, Observer <Partner>{
+//
+//            response ->
+//            Log.i("partner added", "recycler updating")
+//            adapter?.notifyItemInserted(response.position)
+//            changeItemList()
+//
+//        })
 
         setupRecycler()
         binding.dismissButtonPartnersList.setOnClickListener(this)
         binding.addPartnerButtonPartnersList.setOnClickListener(this)
 
-        transactionViewModel.updatePartnerList()
+        //transactionViewModel.updatePartnerList()  prerobene
 
         return binding.root
     }
@@ -144,12 +155,14 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
 
         recycler.layoutManager = layoutManager
         recycler.adapter = adapter
-        binding.transactionViewModel?.updatePartnerList()
+        //binding.transactionViewModel?.updatePartnerList()     //prerobene
     }
 
     private fun changeItemList(){        //adapter zmeni data na tie dovedene do livedata viewmodelu
 
-        adapter?.changePartnerList(binding.transactionViewModel?._partnerList?.value!!)
+        //adapter?.changePartnerList(binding.transactionViewModel?._partnerList?.value!!)
+        //adapter?.changePartnerList(binding.transactionViewModel?.getAllPartners?.value!!)
+        adapter?.changePartnerList(itemlist)
         adapter?.notifyDataSetChanged()
     }
 
@@ -163,7 +176,7 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
 
     override fun onDelete(position: Int) {
 
-        //TODO removal function (DB) returning success or error
+        //TODO removal function (DB)
 
         // voviewmodeli sa osetri vymazanie partnera, observuje sa response,
         // on success sa zmaze aj v recycler view + partner zozname
@@ -185,9 +198,11 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
 
 
 
-    override fun onAccountAdded(newPartner: Partner) {
+    override fun onAccountAdded(newPartner: PartnerDB, position: Int) {
 
-        transactionViewModel.signalRecycler(newPartner)
+        changeItemList()
+
+        //transactionViewModel.signalRecycler(newPartner, position)
         //viewmodel - notifikuj recycler
 
 

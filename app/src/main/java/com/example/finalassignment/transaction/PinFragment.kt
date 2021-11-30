@@ -246,8 +246,6 @@ class PinFragment : DialogFragment(), View.OnClickListener {
             //vykonaj tranzakciu
 
 
-
-
             dialog?.cancel()        //zavriem dialog
             //previest tranzakciu v transaction fragment, ak sa podari, toast ze sa podarila, ak nie tak ze sa nepodarila, znovunacitanie zostatku a jeho refresh
             listener.onTransactionConfirmed()

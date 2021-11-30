@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.finalassignment.R
 import com.example.finalassignment.databinding.FragmentAddPartnerBinding
 import com.example.finalassignment.partners.PartnersRecyclerAdapter
+import com.example.finalassignment.roomdb.PartnerDB
 import com.example.finalassignment.transaction.TransactionViewModel
 import com.example.finalassignment.transaction.ValidationResponse
 
@@ -61,7 +62,7 @@ class AddPartnerFragment : DialogFragment(), View.OnClickListener {
         addingViewModel.eventDBPartnerAdded.observe(viewLifecycleOwner, Observer <PartnerDBResponse> {
 
                 response ->  if (response.isSuccess){   // public key field filled, add partner to db
-            onPersisted(response.partner)   //ulozeny do db, teraz update recyclera
+            onPersisted(response.partner, response.position)   //ulozeny do db, teraz update recyclera
         }
         else Toast.makeText(activity,response.message, Toast.LENGTH_LONG).show()    //show error message
 
@@ -104,9 +105,9 @@ class AddPartnerFragment : DialogFragment(), View.OnClickListener {
 
     }
 
-    fun onPersisted(newPartner: Partner){
+    fun onPersisted(newPartner: PartnerDB, position: Int){
         //komunikuj s fragmentom partners fragment, update recyclerview, pomocou viewmodelu, livedata
-        listener.onAccountAdded(newPartner)
+        listener.onAccountAdded(newPartner, position)
         //addingViewModel.signalRecycler(newPartner)
         dialog?.cancel()
     }
@@ -118,7 +119,7 @@ class AddPartnerFragment : DialogFragment(), View.OnClickListener {
 
     interface OnAccountAddedListener{
 
-        fun onAccountAdded(newPartner: Partner)
+        fun onAccountAdded(newPartner: PartnerDB, position: Int)
     }
 
     fun setOnAccountAddedListener(listener: AddPartnerFragment.OnAccountAddedListener) {
