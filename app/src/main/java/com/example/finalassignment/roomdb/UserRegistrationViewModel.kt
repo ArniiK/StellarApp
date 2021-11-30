@@ -20,8 +20,7 @@ class UserRegistrationViewModel(application: Application): AndroidViewModel(appl
     var bool: Boolean? = null
     init {
         val userRegistrationDAO = UserRegistrationDatabase.getDatabase(application).userRegistrationDAO()
-        val transactionDAO = UserRegistrationDatabase.getDatabase(application).transactionDAO()
-        repository = UserRegistrationRepository(userRegistrationDAO, transactionDAO)
+        repository = UserRegistrationRepository(userRegistrationDAO)
         getAllUsers = repository.getAllUsers
 
     }
@@ -31,11 +30,6 @@ class UserRegistrationViewModel(application: Application): AndroidViewModel(appl
         }
     }
 
-    fun addTransaction(transaction: Transaction) {
-        viewModelScope.launch (Dispatchers.IO){
-            repository.addTransaction(transaction)
-        }
-    }
     fun tryToLogin(privateKey: String?, pinCode: String ) : Boolean? {
         viewModelScope.launch (Dispatchers.IO) {
             val source = KeyPair.fromSecretSeed(privateKey)
@@ -73,65 +67,14 @@ class UserRegistrationViewModel(application: Application): AndroidViewModel(appl
 
     }
 
-    fun updateBalance(user: LiveData<UserRegistration>) {
+    fun updateBalanceByUserId(userId: Int) {
         viewModelScope.launch (Dispatchers.IO) {
+            val user = repository.getUserById(userId)
             val userId = user.value?.id
             val balance = user.value?.let { StellarService.getBalanceByPublicKey(it.publicKey) }
             if (balance != null && userId != null) {
                 repository.updateBalanceByUserId(userId, balance)
             }
-        }
-    }
-
-    fun updateTransactions(user: LiveData<UserRegistration>) {
-        viewModelScope.launch (Dispatchers.IO) {
-            val userId = user.value?.id
-            val transactions = user.value?.let { StellarService.getTransactionsByPublicKey(it.publicKey) }
-            val publicKey = user.value?.publicKey
-            if (transactions != null && publicKey != null && userId != null) {
-                for (transaction in transactions) {
-                    if (transaction.isTransactionSuccessful == true) {
-                        val date = Instant.parse(transaction.createdAt)
-                        var transactionType : String
-                        var partnerHash : String
-                        if (transaction.from == publicKey) {
-                            transactionType = "debit"
-                            partnerHash = transaction.to
-                        }
-                        else {
-                            transactionType = "credit"
-                            partnerHash = transaction.from
-                        }
-
-                        val newTransaction = Transaction(
-                            transactionHash = transaction.transactionHash,
-                            userRegistrationId = userId,
-                            type = transactionType,
-                            amount = transaction.amount.toDouble(),
-                            partnerHash = partnerHash,
-                            date = date,
-                        )
-
-                        repository.addTransaction(newTransaction)
-                    }
-                }
-            }
-        }
-    }
-
-    fun updateUserById(userId: Int) {
-        viewModelScope.launch (Dispatchers.IO) {
-            val user = repository.getUserById(userId)
-            updateBalance(user)
-            updateTransactions(user)
-        }
-    }
-
-    fun updateUserByPublicKey(publicKey: String) {
-        viewModelScope.launch (Dispatchers.IO) {
-            val user = repository.getUserByPublicId(publicKey)
-            updateBalance(user)
-            updateTransactions(user)
         }
     }
 }

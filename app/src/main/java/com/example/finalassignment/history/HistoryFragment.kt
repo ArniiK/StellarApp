@@ -1,4 +1,4 @@
-package com.example.finalassignment
+package com.example.finalassignment.history
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,12 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalassignment.databinding.FragmentHistoryBinding
 import org.stellar.sdk.*
-import org.stellar.sdk.AbstractTransaction.MIN_BASE_FEE
 import java.util.*
-import org.stellar.sdk.responses.SubmitTransactionResponse
-
-import org.stellar.sdk.responses.AccountResponse
-import java.lang.Exception
 
 
 class HistoryFragment : Fragment() {

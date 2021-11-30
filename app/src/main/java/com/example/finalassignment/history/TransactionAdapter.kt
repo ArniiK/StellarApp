@@ -1,4 +1,4 @@
-package com.example.finalassignment
+package com.example.finalassignment.history
 
 import android.graphics.Color
 import android.view.LayoutInflater

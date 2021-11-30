@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 
 class UserRegistrationRepository(
     private val userRegistrationDAO: UserRegistrationDAO,
-    private val transactionDAO: TransactionDAO
 ) {
 
     val getAllUsers: LiveData<List<UserRegistration>> = userRegistrationDAO.getAllUsers()
@@ -23,12 +22,4 @@ class UserRegistrationRepository(
         return userRegistrationDAO.updateBalanceByUserById(id, balance)
     }
 
-    val getAllTransactions: LiveData<List<Transaction>> = transactionDAO.getAllTransactions()
-
-    suspend fun addTransaction(transaction: Transaction){
-        transactionDAO.addTransaction(transaction)
-    }
-    suspend fun getTransactionsForUserId(userId: Int): LiveData<List<Transaction>> {
-        return transactionDAO.getTransactionsForUserId(userId)
-    }
 }
