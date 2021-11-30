@@ -91,10 +91,6 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
         loginClickable = binding.registerTextClickableLogin //klikatelny text registrovat
         loginClickable.setOnClickListener(this)
 
-        // Arnicek a marecek
-        //kod ktory ste tu mali ate vo funkcii logIn dole
-        //
-
         return view
     }
 
@@ -127,17 +123,7 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
         }
     }
 
-    fun logIn(){    //TODO: check the credentials and move to main wrapping fragment
-
-        // pin a username uz nie su, ma byt iba private key
-
-        //val pin = binding.PInfragmentLoginEditText.text.toString()
-        //val userName = binding.usernameLoginEditText.text.toString()
-
-        //TODO tieto funckie si presun do ontransaction confirmed
-//        mUserRegistrationViewModel.getAllUsers
-//        val allData:LiveData<List<UserRegistration>> =  mUserRegistrationViewModel.getAllUsers
-
+    private fun logIn(){
         val privateKey = binding.loginPrivateKeyEditText.text.toString()
 
         if(privateKey.isNotEmpty()){
@@ -149,16 +135,10 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
             dialog.setArguments(args)
             dialog.setOnTransactionConfirmedListener(this)
             dialog.show(activity?.supportFragmentManager!!, "PinDialog")
-            Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()
+//            Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()
         }else{
             Toast.makeText(activity,"Enter Private Key",Toast.LENGTH_LONG).show()
         }
-
-
-
-
-//        val action = LoginFragmentDirections.actionLoginFragmentToWrappingFragment()
-//        view?.findNavController()?.navigate(action)
     }
 
     fun moveToRegister(){
@@ -174,6 +154,6 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
 
         val action = LoginFragmentDirections.actionLoginFragmentToWrappingFragment()
         view?.findNavController()?.navigate(action)
-        Toast.makeText(activity,"Pin succesfuly confirmed", Toast.LENGTH_LONG).show()
+//        Toast.makeText(activity,"Pin succesfuly confirmed", Toast.LENGTH_LONG).show()
     }
 }

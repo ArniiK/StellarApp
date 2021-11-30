@@ -3,14 +3,18 @@ package com.example.finalassignment
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TableLayout
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.finalassignment.databinding.FragmentWrappingBinding
+import com.example.finalassignment.transaction.PinFragment
 import com.google.android.material.tabs.TabLayout
 
 // TODO: Rename parameter arguments, choose names that match
@@ -23,7 +27,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [WrappingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class WrappingFragment : Fragment(), TabLayout.OnTabSelectedListener {
+class WrappingFragment : Fragment(), TabLayout.OnTabSelectedListener, LogoutFragment.OnLogoutConfirmedListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -49,6 +53,9 @@ class WrappingFragment : Fragment(), TabLayout.OnTabSelectedListener {
     ): View? {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_wrapping, container,false)
+        binding.logoutItem.setOnClickListener(){
+            logOutUser()
+        }
         val view = binding.root
         addToolbar()
         initViewPager()
@@ -99,12 +106,15 @@ class WrappingFragment : Fragment(), TabLayout.OnTabSelectedListener {
             override fun onPageSelected(position: Int) {
                 tabLayout.getTabAt(position)?.select()
                 super.onPageSelected(position)
-
-
             }
         });
+    }
 
+    private fun logOutUser(){
+        val dialog = LogoutFragment()
 
+        dialog.setOnLogoutConfirmedListener(this)
+        dialog.show(activity?.supportFragmentManager!!, "LogoutDialog")
     }
 
     override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -122,6 +132,12 @@ class WrappingFragment : Fragment(), TabLayout.OnTabSelectedListener {
 
     override fun onTabReselected(tab: TabLayout.Tab?) {
 
+    }
+
+    override fun onLogoutConfirmed() {
+        val action = WrappingFragmentDirections.actionWrappingFragmentToLoginFragment()
+        view?.findNavController()?.navigate(action)
+        Toast.makeText(activity,"User successfully logged out", Toast.LENGTH_LONG).show()
     }
 
 

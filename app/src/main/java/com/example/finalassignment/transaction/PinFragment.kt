@@ -182,7 +182,7 @@ class PinFragment : DialogFragment(), View.OnClickListener {
                     mHistoryViewModel.updateTransactions(ActiveUserSingleton.id, ActiveUserSingleton.publicKey)
                 }
 
-                Toast.makeText(requireContext(),"Succesfully logged in",Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_LONG).show()
 
                 dialog?.cancel()        //zavriem dialog
                 //previest tranzakciu v transaction fragment, ak sa podari, toast ze sa podarila, ak nie tak ze sa nepodarila, znovunacitanie zostatku a jeho refresh

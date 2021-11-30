@@ -13,30 +13,25 @@
         android:layout_height="match_parent">
 
         <androidx.appcompat.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/menuToolbar"
-        app:title="@string/app_name"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:elevation="0dp"
-        android:background="#7851A9"
-        >
-
-        <com.google.android.material.tabs.TabLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:id="@+id/menuToolbar"
+            app:title="@string/app_name"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:elevation="0dp"
+            android:background="#7851A9"
             >
 
-            <com.google.android.material.tabs.TabItem
+            <ImageButton
                 android:id="@+id/logoutItem"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_logout_13" />
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/ic_logout_13"
+                android:layout_gravity="right"
+                android:layout_marginEnd="20dp"
 
 
-        </com.google.android.material.tabs.TabLayout>
-
+                />
         </androidx.appcompat.widget.Toolbar>
 
 
