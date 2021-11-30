@@ -42,6 +42,8 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
 
 
     private lateinit var mUserRegistrationViewModel: UserRegistrationViewModel
+    private var test: List<UserRegistration> = emptyList()
+
     private lateinit var mActiveUserViewModel: ActiveUserViewModel
 
     private var activeUser: ActiveUser? = null
@@ -72,7 +74,13 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
 //        mUserRegistrationViewModel.getAllUsers.observe(viewLifecycleOwner, Observer { it ->
 //            test = it
 //        })
+
+
+
         mUserRegistrationViewModel = ViewModelProvider(this).get(UserRegistrationViewModel::class.java)
+        mUserRegistrationViewModel.getAllUsers.observe(viewLifecycleOwner, Observer { it ->
+            test = it
+        })
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container,false)
         val view = binding.root
@@ -142,8 +150,10 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
         dialog.show(activity?.supportFragmentManager!!, "PinDialog")
         Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()
 
-        val action = LoginFragmentDirections.actionLoginFragmentToWrappingFragment()
-        view?.findNavController()?.navigate(action)
+
+
+//        val action = LoginFragmentDirections.actionLoginFragmentToWrappingFragment()
+//        view?.findNavController()?.navigate(action)
     }
 
     fun moveToRegister(){
@@ -157,6 +167,8 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
     override fun onTransactionConfirmed() {
 
         //TODO after successful pin confirmation procedure
+        val action = LoginFragmentDirections.actionLoginFragmentToWrappingFragment()
+        view?.findNavController()?.navigate(action)
         Toast.makeText(activity,"Pin succesfuly confirmed", Toast.LENGTH_LONG).show()
     }
 }

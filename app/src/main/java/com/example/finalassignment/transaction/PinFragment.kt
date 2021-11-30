@@ -10,6 +10,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
+import com.example.finalassignment.LoginFragmentDirections
 import com.example.finalassignment.R
 import com.example.finalassignment.cryptography.Encryption
 import com.example.finalassignment.cryptography.HashedPinEncryptedData
@@ -20,7 +22,9 @@ import com.example.finalassignment.roomdb.UserRegistration
 import com.example.finalassignment.roomdb.UserRegistrationViewModel
 import com.example.finalassignment.singleton.ActiveUserSingleton
 import org.stellar.sdk.KeyPair
+import java.lang.Exception
 import javax.crypto.SecretKey
+import kotlin.jvm.Throws
 
 
 class PinFragment : DialogFragment(), View.OnClickListener {
@@ -112,7 +116,7 @@ class PinFragment : DialogFragment(), View.OnClickListener {
 //
 //    }
 
-
+    @Throws(IllegalArgumentException::class)
     private fun confirmTransactionLogin(privateKey: String?){
         val pinCode = binding.editTextNumberPassword.text.toString()
 
@@ -122,65 +126,70 @@ class PinFragment : DialogFragment(), View.OnClickListener {
         var isPinCorrect = false
 
 
-        Log.d("source " ,"source ")
-        val source = KeyPair.fromSecretSeed(privateKey)
+        try {
+            val source = KeyPair.fromSecretSeed(privateKey)
+            val publicKey = source.accountId
 
-        val publicKey = source.accountId
-        Log.d("PK " ,"PK ")
+            var user: UserRegistration? = null
+            for (item in test) {
+                if (item.publicKey.equals(publicKey)) {
+                    user = item
 
-        var user: UserRegistration? = null
-        for (item in test)
-        {
-            if (item.publicKey.equals(publicKey))
-            {
-                user = item
+                    Log.d("useri obtainuty", "useri obtainuty")
+                    break
+                }
 
-                Log.d("useri obtainuty" ,"useri obtainuty")
-                break
+            }
+
+            if (user != null) {
+                Log.d("user null? ", "user null? ")
+                //            //salt z dbs
+                val salt: ByteArray? = user.salt
+                Log.d("salt generated ", "salt generated  ")
+                //iv z dbs
+                val inicializationVector: ByteArray? = user.iv
+
+                //toto je privateKey(zasifrovany) z dbs
+                val encryptedTextFromDB: String? = user.privateKey
+
+                val e = Encryption()
+                //zahashujem novozadany pin pomocou saltu z dbs
+                val secretKey: SecretKey = e.hashPinLogin(salt, pinCode)
+
+                // prazdny object
+                var hped = HashedPinEncryptedData()
+
+                //hpedNew bude obsahovat po zbehnuti iba encryptedText->novozasifrovany text(privateKey) podla zahashovaneho pinu, ostatne atributy tu mas uz
+                val hpedNew: HashedPinEncryptedData? =
+                    e.encrypt(privateKey, secretKey, inicializationVector, hped)
+                //skontrolujem ci sa novy encryptedText(zasifrovany privateKey) rovna tomu v dbs, ak ano prihlasim
+                if (hpedNew?.encryptedText.equals(encryptedTextFromDB)) {
+                    isPinCorrect = true
+
+                }
+            }
+            if (isPinCorrect == true){
+                val activeUser = ActiveUser(user!!.id, "Y")
+                mActiveUserViewModel.addActiveUser(activeUser)
+                initActiveUserToSingleton(user)
+                Toast.makeText(requireContext(),"Succesfully logged in",Toast.LENGTH_LONG).show()
+
+                dialog?.cancel()        //zavriem dialog
+                //previest tranzakciu v transaction fragment, ak sa podari, toast ze sa podarila, ak nie tak ze sa nepodarila, znovunacitanie zostatku a jeho refresh
+                listener.onTransactionConfirmed()
+            }
+            else {
+                Toast.makeText(activity,"Incorrect pin or private key, try again", Toast.LENGTH_LONG).show()
+                dialog?.cancel()
             }
 
         }
+        catch (e: Exception){
+            println("private Key is not correct" + e.stackTrace)
+            Toast.makeText(activity,"Incorrect pin or private key, try again", Toast.LENGTH_LONG).show()
+            dialog?.cancel()
 
-        if (user!= null)
-        {
-            Log.d("user null? " ,"user null? ")
-            //            //salt z dbs
-            val salt: ByteArray? = user.salt
-            Log.d("salt generated " ,"salt generated  ")
-            //iv z dbs
-            val inicializationVector: ByteArray? = user.iv
-
-            //toto je privateKey(zasifrovany) z dbs
-            val encryptedTextFromDB: String? = user.privateKey
-
-            val e = Encryption()
-            //zahashujem novozadany pin pomocou saltu z dbs
-            val secretKey: SecretKey = e.hashPinLogin(salt, pinCode)
-
-            // prazdny object
-            var hped = HashedPinEncryptedData()
-
-            //hpedNew bude obsahovat po zbehnuti iba encryptedText->novozasifrovany text(privateKey) podla zahashovaneho pinu, ostatne atributy tu mas uz
-            val hpedNew: HashedPinEncryptedData? = e.encrypt(privateKey, secretKey, inicializationVector, hped)
-            //skontrolujem ci sa novy encryptedText(zasifrovany privateKey) rovna tomu v dbs, ak ano prihlasim
-            if(hpedNew?.encryptedText.equals(encryptedTextFromDB)) {
-                isPinCorrect = true
-
-            }
         }
-
-        if (isPinCorrect == true){
-            val activeUser = ActiveUser(user!!.id, "Y")
-            mActiveUserViewModel.addActiveUser(activeUser)
-            initActiveUserToSingleton(user)
-            Toast.makeText(requireContext(),"Succesfully logged in",Toast.LENGTH_LONG).show()
-
-            dialog?.cancel()        //zavriem dialog
-            //previest tranzakciu v transaction fragment, ak sa podari, toast ze sa podarila, ak nie tak ze sa nepodarila, znovunacitanie zostatku a jeho refresh
-            listener.onTransactionConfirmed()
-        }
-        else Toast.makeText(activity,"Incorrect pin or private key, try again", Toast.LENGTH_LONG).show()
-
     }
 
     private fun initActiveUserToSingleton(user: UserRegistration) {
