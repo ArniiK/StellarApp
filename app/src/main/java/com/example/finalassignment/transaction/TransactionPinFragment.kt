@@ -17,6 +17,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.finalassignment.R
 import com.example.finalassignment.databinding.FragmentPinBinding
 import com.example.finalassignment.databinding.FragmentPinTransactionBinding
+import com.example.finalassignment.transaction.partners.PinValidationResponse
 import java.security.PrivateKey
 class TransactionPinFragment: DialogFragment(), View.OnClickListener {
 
@@ -64,12 +65,13 @@ class TransactionPinFragment: DialogFragment(), View.OnClickListener {
 //            }
 //
 //        })
-        viewModel.eventPinControlResponse.observe(viewLifecycleOwner, Observer<ValidationResponse>{ response ->
+        viewModel.eventPinControlResponse.observe(viewLifecycleOwner, Observer<PinValidationResponse>{ response ->
 
             if (response.isSuccess){
 
                 Toast.makeText(activity,response.message, Toast.LENGTH_LONG).show()
-                confirmTransaction()        // dialog close, send transaction, success remove field values - WM
+                // treba zavolat transakciiu s desifrovanym pinom, desifroval sa na zaklade pin kodu
+                confirmTransaction(response.decryptedPrivateKey)        // dialog close, send transaction, success remove field values - WM
             }
             else{
 
@@ -90,11 +92,18 @@ class TransactionPinFragment: DialogFragment(), View.OnClickListener {
         }
     }
 
-    private fun confirmTransaction(){
+    private fun confirmTransaction(decryptedPrivateKey: String){
 
         Log.d("pin" ,"confirmed")
-        viewModel.performTransaction()  //vykonaj transakciu
+        Log.d("decrypted private " ,decryptedPrivateKey)
+        listener.onTransactionConfirmed(decryptedPrivateKey)
+        //viewModel.performTransaction()  //vykonaj transakciu ale z transaction fragment ten ma pristup k datam, tu sa nema volat
         dialog?.cancel()
+
+
+
+
+
 //            val parent = getChildFragmentManager()  //getParentFragment()
 //            //val mview = parent?.view
 //            val action = PinFragmentDirections.actionPinFragmentToWrappingFragment()
@@ -113,7 +122,7 @@ class TransactionPinFragment: DialogFragment(), View.OnClickListener {
 
     interface OnTransactionConfirmedListener{
 
-        fun onTransactionConfirmed();
+        fun onTransactionConfirmed(decryptedPrivateKey: String);
     }
 
     fun setOnTransactionConfirmedListener(listener: OnTransactionConfirmedListener){

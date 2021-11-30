@@ -2,8 +2,8 @@ package com.example.finalassignment.transaction
 
 import android.app.Application
 import android.util.Log
-import android.widget.Toast
 import androidx.core.content.ContentProviderCompat.requireContext
+import android.widget.Toast
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.*
 import com.example.finalassignment.cryptography.Encryption
@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import com.example.finalassignment.roomdb.PartnerDB
 import com.example.finalassignment.singleton.ActiveUserSingleton
 import com.example.finalassignment.transaction.partners.Partner
+import com.example.finalassignment.transaction.partners.PinValidationResponse
 import org.stellar.sdk.KeyPair
 import javax.crypto.SecretKey
 
@@ -91,8 +92,8 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
         get() = _eventTransactionSuccess
 
 
-    private var _eventPinControlResponse = MutableLiveData<ValidationResponse>()
-    val eventPinControlResponse: LiveData<ValidationResponse>
+    private var _eventPinControlResponse = MutableLiveData<PinValidationResponse>()
+    val eventPinControlResponse: LiveData<PinValidationResponse>
         get() = _eventPinControlResponse
 
     private var _eventValidationResponse = MutableLiveData<ValidationResponse>()
@@ -135,7 +136,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
     init {
 
-        _publicKey.value = "789"
+        _publicKey.value = ""
         _balance.value = "100"
         _amount.value = ""
         _pin.value = ""
@@ -278,7 +279,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
     fun onPinConfirm(){
 
-        val pinResponse = ValidationResponse()
+        val pinResponse = PinValidationResponse()
 
         if((getpin.value.toString().length == 4) && getpin.value.toString().isDigitsOnly()){    // field of 4 numbers
 
@@ -327,6 +328,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
                 pinResponse.isSuccess = true
                 pinResponse.message = "Pin correct, transaction"
+                pinResponse.decryptedPrivateKey = decryptedPrivateKey.toString() //treba ku transakcii
                 _eventPinControlResponse.value = pinResponse
             }
             else{
@@ -345,9 +347,16 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
     }
 
-    fun performTransaction(){
+    fun performTransaction(decryptedPrivateKey: String){
 
         Log.d("transaction state", "PERFORMED")
+        Log.d("dec private ", decryptedPrivateKey)
+        Log.d("recipient public ", getpublicKey.value.toString())
+        Log.d("amount to send ", getamount.value.toString())
+        //po uspesnom overeni pinu sa z transaction fragment zavola funkcia na vykonanie transakcie
+        //natiahnute su polia public key a amount, pomocou 2way databinding, live data
+
+
 
     }
 
@@ -498,7 +507,6 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
         Log.i("partner in viewmodel" ,partner.publicKey)
 
     }
-
 
 }
 

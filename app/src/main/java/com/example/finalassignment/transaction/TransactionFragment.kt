@@ -81,6 +81,8 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
 
 
 
+
+
         val view = binding.root
 
         partnersBtn = binding.PKInputField.enterPartnersButton      //otvranie dialogu platobnych partnerov
@@ -159,23 +161,15 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
     }
 
 
-//    override fun onTransactionConfirmed() {
-//
-////        //TODO tranzakcia
-////        val transactionExecuted = true
-////
-////        if (transactionExecuted) {
-////            //TODO refresh balance from stellar network
-////            Toast.makeText(activity, "Your transaction was performed", Toast.LENGTH_LONG).show()
-////        }
-////        else  Toast.makeText(activity, "Transaction error - not executed", Toast.LENGTH_LONG).show()
-//    }
 
     fun getActiveUserBalance(): Double {
         return 1000.toDouble()
     }
 
-    override fun onTransactionConfirmed() {
+    override fun onTransactionConfirmed(decryptedPrivateKey: String) {
+
+
+        viewModel.performTransaction(decryptedPrivateKey)       //zavola sa vykonanie transakcie vo viewmodeli
         //        //TODO tranzakcia
 //        val transactionExecuted = true
 //
