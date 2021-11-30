@@ -54,6 +54,9 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
     private lateinit var registerBtn : Button
     private lateinit var loginClickable: TextView
 
+    private var test: List<UserRegistration> = emptyList()
+
+
     private lateinit var mUserRegistrationViewModel: UserRegistrationViewModel
 
 
@@ -74,6 +77,10 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_registration,container, false)
         mUserRegistrationViewModel = ViewModelProvider(this).get(UserRegistrationViewModel::class.java)
+
+        mUserRegistrationViewModel.getAllUsers.observe(viewLifecycleOwner, androidx.lifecycle.Observer{ it ->
+            test = it
+        })
         val view = binding.root
 
         binding.newAccountClickableText.setOnClickListener {
@@ -94,9 +101,9 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
 
             }
             if (returnState.equals(1))
-                Toast.makeText(requireContext(),"Pin codes must be same.\nLength must be 4 or 6 digits.",Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(),"Pin codes must be same.\nLength must be 4 digits.",Toast.LENGTH_LONG).show()
             if (returnState.equals(2))
-                Toast.makeText(requireContext(),"User with this private key is already registered,\ntry another private key or log in",Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(),"User with this key already exists,\ntry another private key or log in",Toast.LENGTH_LONG).show()
         }
 
         loginClickable = binding.registrationClickableLoginText //klikatelny text na presun na login
@@ -113,14 +120,32 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
     private fun insertDataToDatabase():Int
     {
 
+
         val privateKey = binding.privateKeyEditText.text.toString()
         val pinAgain = binding.registrationPinAgainPassword.text.toString()
         val pin = binding.registrationPinPassword.text.toString()
+
+        val sourceCheck = KeyPair.fromSecretSeed(privateKey)
+        val publicKeyCheck = sourceCheck.accountId
+
+        //check ci uz nieje v db
+        var user: UserRegistration? = null
+        for (item in test) {
+            if (item.publicKey.equals(publicKeyCheck)) {
+                user = item
+                break
+            }
+        }
 
         if(!pin.equals(pinAgain)||!validatePIN(pin))
         {
             return 1
         }
+
+        if(user != null){
+            return 2
+        }
+
         val e = Encryption()
         val hped: HashedPinEncryptedData = e.hashPinRegistration(pin)
         val inicializationVector = e.generateIv()
@@ -204,7 +229,7 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
     }
 
     fun validatePIN (pin: String): Boolean {
-        return !(pin.length!=4 && pin.length!=6)
+        return (pin.length==4)
     }
 
 

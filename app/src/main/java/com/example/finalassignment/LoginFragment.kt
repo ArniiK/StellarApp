@@ -122,7 +122,7 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
 
         when(v){
 
-            binding.loginSubmitBtn -> logIn()//registruj a potom sa presun sa na hlavnu stranku
+            binding.loginSubmitBtn -> logIn()
             binding.registerTextClickableLogin -> moveToRegister()
         }
     }
@@ -140,15 +140,20 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
 
         val privateKey = binding.loginPrivateKeyEditText.text.toString()
 
-        val dialog = PinFragment()
+        if(privateKey.isNotEmpty()){
+            val dialog = PinFragment()
 
-        var args: Bundle? = Bundle()
-        args?.putString("privateKey", privateKey)
+            var args: Bundle? = Bundle()
+            args?.putString("privateKey", privateKey)
 
-        dialog.setArguments(args)
-        dialog.setOnTransactionConfirmedListener(this)
-        dialog.show(activity?.supportFragmentManager!!, "PinDialog")
-        Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()
+            dialog.setArguments(args)
+            dialog.setOnTransactionConfirmedListener(this)
+            dialog.show(activity?.supportFragmentManager!!, "PinDialog")
+            Toast.makeText(activity,"Sent",Toast.LENGTH_LONG).show()
+        }else{
+            Toast.makeText(activity,"Enter Private Key",Toast.LENGTH_LONG).show()
+        }
+
 
 
 
@@ -166,7 +171,7 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
 
     override fun onTransactionConfirmed() {
 
-        //TODO after successful pin confirmation procedure
+
         val action = LoginFragmentDirections.actionLoginFragmentToWrappingFragment()
         view?.findNavController()?.navigate(action)
         Toast.makeText(activity,"Pin succesfuly confirmed", Toast.LENGTH_LONG).show()
