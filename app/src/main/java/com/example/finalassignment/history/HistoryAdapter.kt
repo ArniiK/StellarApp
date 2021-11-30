@@ -7,6 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.finalassignment.databinding.ItemTransactionBinding
 import com.example.finalassignment.roomdb.Transaction
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.*
 
 class HistoryAdapter (
     private val transactionData: List<Transaction>
@@ -14,7 +18,10 @@ class HistoryAdapter (
 
     class TransactionViewHolder(private val itemBinding: ItemTransactionBinding) : RecyclerView.ViewHolder(itemBinding.root) {
         fun bind(transaction: Transaction) {
-            val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
+            val formatter: DateTimeFormatter =
+                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)
+                    .withLocale(Locale.UK)
+                    .withZone(ZoneId.systemDefault())
             itemBinding.tvDate.text = formatter.format(transaction.date)
             itemBinding.tvAmount.text = transaction.amount.toString()
             itemBinding.tvName.text = transaction.partnerHash

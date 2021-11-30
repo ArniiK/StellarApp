@@ -15,7 +15,7 @@ import java.time.Instant
 
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: TransactionRepository
-    lateinit var transactionsById : LiveData<List<Transaction>>
+    var transactionsById: LiveData<List<Transaction>>? = null
     init {
         val transactionDAO = UserRegistrationDatabase.getDatabase(application).transactionDAO()
         repository = TransactionRepository(transactionDAO)
@@ -27,11 +27,11 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun getTransactionsForId(userId: Int) {
-        viewModelScope.async (Dispatchers.IO){
-            transactionsById = repository.getTransactionsForUserId(userId)
-        }
+    fun getTransactionsForId(userId: Int): LiveData<List<Transaction>> {
+        transactionsById = repository.getTransactionsForUserId(userId)
+        return transactionsById!!
     }
+
     suspend fun updateTransactions(userId: Int, publicKey: String) {
         val transactions = StellarService.getTransactionsByPublicKey(publicKey)
         if (transactions != null && publicKey != null && userId != null) {

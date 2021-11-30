@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalassignment.databinding.FragmentHistoryBinding
+import com.example.finalassignment.roomdb.Transaction
 import com.example.finalassignment.singleton.ActiveUserSingleton
 import java.util.*
 
@@ -28,18 +30,17 @@ class HistoryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = ViewModelProviders.of(this).get(HistoryViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(HistoryViewModel::class.java)
         binding = FragmentHistoryBinding.inflate(inflater)
         val view = binding.root
 
-        viewModel.getTransactionsForId(ActiveUserSingleton.id)
-        viewModel.transactionsById.observe(viewLifecycleOwner, Observer{ transactions ->
+        viewModel.getTransactionsForId(ActiveUserSingleton.id).observe(viewLifecycleOwner,
+        Observer<List<Transaction>> { transactions ->
             historyAdapter = HistoryAdapter(transactions)
-        })
-
-
-        binding.rvTransactionHistory.adapter = historyAdapter
-        binding.rvTransactionHistory.layoutManager = LinearLayoutManager(activity)
+            binding.rvTransactionHistory.adapter = historyAdapter
+            binding.rvTransactionHistory.layoutManager = LinearLayoutManager(activity)
+        }
+        )
 
         return view
     }
