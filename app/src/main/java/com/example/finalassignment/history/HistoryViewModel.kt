@@ -10,9 +10,7 @@ import com.example.finalassignment.roomdb.Transaction
 import com.example.finalassignment.roomdb.TransactionRepository
 import com.example.finalassignment.roomdb.UserRegistrationDatabase
 import com.example.finalassignment.roomdb.UserRegistrationRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.time.Instant
 
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
@@ -35,34 +33,32 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         }
     }
     suspend fun updateTransactions(userId: Int, publicKey: String) {
-        viewModelScope.launch (Dispatchers.IO) {
-            val transactions = StellarService.getTransactionsByPublicKey(publicKey)
-            if (transactions != null && publicKey != null && userId != null) {
-                for (transaction in transactions) {
-                    if (transaction.isTransactionSuccessful == true) {
-                        val date = Instant.parse(transaction.createdAt)
-                        var transactionType : String
-                        var partnerHash : String
-                        if (transaction.from == publicKey) {
-                            transactionType = "-"
-                            partnerHash = transaction.to
-                        }
-                        else {
-                            transactionType = "+"
-                            partnerHash = transaction.from
-                        }
-
-                        val newTransaction = Transaction(
-                            transactionHash = transaction.transactionHash,
-                            userRegistrationId = userId,
-                            type = transactionType,
-                            amount = transaction.amount.toDouble(),
-                            partnerHash = partnerHash,
-                            date = date,
-                        )
-
-                        addTransaction(newTransaction)
+        val transactions = StellarService.getTransactionsByPublicKey(publicKey)
+        if (transactions != null && publicKey != null && userId != null) {
+            for (transaction in transactions) {
+                if (transaction.isTransactionSuccessful == true) {
+                    val date = Instant.parse(transaction.createdAt)
+                    var transactionType : String
+                    var partnerHash : String
+                    if (transaction.from == publicKey) {
+                        transactionType = "-"
+                        partnerHash = transaction.to
                     }
+                    else {
+                        transactionType = "+"
+                        partnerHash = transaction.from
+                    }
+
+                    val newTransaction = Transaction(
+                        transactionHash = transaction.transactionHash,
+                        userRegistrationId = userId,
+                        type = transactionType,
+                        amount = transaction.amount.toDouble(),
+                        partnerHash = partnerHash,
+                        date = date,
+                    )
+
+                    addTransaction(newTransaction)
                 }
             }
         }

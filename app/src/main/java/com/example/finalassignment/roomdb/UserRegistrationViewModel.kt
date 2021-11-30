@@ -7,8 +7,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.finalassignment.StellarService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.stellar.sdk.KeyPair
+import java.security.PublicKey
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -67,14 +69,8 @@ class UserRegistrationViewModel(application: Application): AndroidViewModel(appl
 
     }
 
-    fun updateBalanceByUserId(userId: Int) {
-        viewModelScope.launch (Dispatchers.IO) {
-            val user = repository.getUserById(userId)
-            val userId = user.value?.id
-            val balance = user.value?.let { StellarService.getBalanceByPublicKey(it.publicKey) }
-            if (balance != null && userId != null) {
-                repository.updateBalanceByUserId(userId, balance)
-            }
-        }
+    suspend fun updateBalance(userId: Int, publicKey: String) {
+            val balance = StellarService.getBalanceByPublicKey(publicKey)
+            repository.updateBalanceByUserId(userId, balance)
     }
 }
