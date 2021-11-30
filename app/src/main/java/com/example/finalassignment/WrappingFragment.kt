@@ -89,7 +89,7 @@ class WrappingFragment : Fragment(), TabLayout.OnTabSelectedListener, LogoutFrag
         tabLayout.addOnTabSelectedListener(this)
         tabLayout.getTabAt(0)?.icon!!.setTint(Color.BLACK)   // este preskusat
         tabLayout.getTabAt(1)?.icon!!.setTint(Color.WHITE)
-        tabLayout.getTabAt(2)?.icon!!.setTint(Color.WHITE)
+//        tabLayout.getTabAt(2)?.icon!!.setTint(Color.WHITE)
     }
 
     private fun initViewPager(){
