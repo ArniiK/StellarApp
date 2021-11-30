@@ -20,7 +20,26 @@
         app:layout_scrollFlags="scroll|enterAlways"
         app:elevation="0dp"
         android:background="#7851A9"
-        />
+        >
+
+        <com.google.android.material.tabs.TabLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            >
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/logoutItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/ic_logout_13" />
+
+
+        </com.google.android.material.tabs.TabLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/pager"
