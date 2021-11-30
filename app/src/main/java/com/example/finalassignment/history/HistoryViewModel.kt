@@ -21,10 +21,9 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         repository = TransactionRepository(transactionDAO)
     }
 
-    fun addTransaction(transaction: Transaction) {
-        viewModelScope.launch (Dispatchers.IO){
-            repository.addTransaction(transaction)
-        }
+    suspend fun addTransaction(transaction: Transaction) {
+        repository.addTransaction(transaction)
+
     }
 
     fun getTransactionsForId(userId: Int): LiveData<List<Transaction>> {

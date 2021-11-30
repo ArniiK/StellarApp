@@ -9,7 +9,7 @@ import androidx.room.Query
 @Dao
 interface TransactionDAO {
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addTransaction(transaction: Transaction)
 
     @Query("Select * from transaction_table")

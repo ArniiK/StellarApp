@@ -6,6 +6,7 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import android.widget.Toast
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.*
+import com.example.finalassignment.StellarService
 import com.example.finalassignment.cryptography.Encryption
 import com.example.finalassignment.cryptography.HashedPinEncryptedData
 import com.example.finalassignment.roomdb.PartnerRepository
@@ -18,6 +19,7 @@ import com.example.finalassignment.roomdb.PartnerDB
 import com.example.finalassignment.singleton.ActiveUserSingleton
 import com.example.finalassignment.transaction.partners.Partner
 import com.example.finalassignment.transaction.partners.PinValidationResponse
+import kotlinx.coroutines.GlobalScope
 import org.stellar.sdk.KeyPair
 import javax.crypto.SecretKey
 
@@ -355,9 +357,34 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
         Log.d("amount to send ", getamount.value.toString())
         //po uspesnom overeni pinu sa z transaction fragment zavola funkcia na vykonanie transakcie
         //natiahnute su polia public key a amount, pomocou 2way databinding, live data
+        var amount = getamount.value.toString().toDouble()
+        var recipientPublicKey = getpublicKey.value.toString()
 
+        GlobalScope.launch(Dispatchers.IO) {
+            val keyPair: KeyPair = KeyPair.fromSecretSeed(decryptedPrivateKey)
+            var balance: Double = StellarService.getBalanceByPublicKey(keyPair.accountId)
 
+            if (balance >= amount ) {
+                var accountExists: Boolean = StellarService.checkAccountExists(recipientPublicKey)
+                if (accountExists) {
+                    var successful = false
+                    if (amount != null && recipientPublicKey != null && decryptedPrivateKey != null) {
+                        successful = StellarService.sendTransaction(
+                            decryptedPrivateKey,
+                            recipientPublicKey,
+                            amount,
+                        )
+                    }
+                    if (successful) {
+                        Log.d("transaction state", "SUCCESSFUL")
+                    }
+                    else {
+                        Log.d("transaction state", "FAILED")
+                    }
 
+                }
+            }
+        }
     }
 
 

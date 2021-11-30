@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.example.finalassignment.LoginFragmentDirections
 import com.example.finalassignment.R
+import com.example.finalassignment.StellarService
 import com.example.finalassignment.cryptography.Encryption
 import com.example.finalassignment.cryptography.HashedPinEncryptedData
 import com.example.finalassignment.databinding.FragmentPinBinding
@@ -179,6 +180,8 @@ class PinFragment : DialogFragment(), View.OnClickListener {
 
                 GlobalScope.launch(Dispatchers.IO) {
                     mUserRegistrationViewModel.updateBalance(ActiveUserSingleton.id, ActiveUserSingleton.publicKey)
+                }
+                GlobalScope.launch(Dispatchers.IO) {
                     mHistoryViewModel.updateTransactions(ActiveUserSingleton.id, ActiveUserSingleton.publicKey)
                 }
 
@@ -256,8 +259,10 @@ class PinFragment : DialogFragment(), View.OnClickListener {
             //vykonaj tranzakciu
 
 
-            dialog?.cancel()        //zavriem dialog
+            dialog?.cancel() //zavriem dialog
             //previest tranzakciu v transaction fragment, ak sa podari, toast ze sa podarila, ak nie tak ze sa nepodarila, znovunacitanie zostatku a jeho refresh
+
+
             listener.onTransactionConfirmed()
         }
         else Toast.makeText(activity,"Incorrect pin, try again", Toast.LENGTH_LONG).show()
