@@ -6,7 +6,7 @@ import androidx.room.*
 @Dao
 interface PartnerDAO {
 
-    @Query("Select * from partner_table order by publicKey ASC")
+    @Query("Select * from partner_table")
     fun getAllPartners(): LiveData<List<PartnerDB>>
 
     @Query("Select * from partner_table where publicKey == :pk")
