@@ -21,45 +21,8 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         repository = TransactionRepository(transactionDAO)
     }
 
-    suspend fun addTransaction(transaction: Transaction) {
-        repository.addTransaction(transaction)
-
-    }
-
     fun getTransactionsForId(userId: Int): LiveData<List<Transaction>> {
         transactionsById = repository.getTransactionsForUserId(userId)
         return transactionsById!!
-    }
-
-    suspend fun updateTransactions(userId: Int, publicKey: String) {
-        val transactions = StellarService.getTransactionsByPublicKey(publicKey)
-        if (transactions != null && publicKey != null && userId != null) {
-            for (transaction in transactions) {
-                if (transaction.isTransactionSuccessful == true) {
-                    val date = Instant.parse(transaction.createdAt)
-                    var transactionType : String
-                    var partnerHash : String
-                    if (transaction.from == publicKey) {
-                        transactionType = "-"
-                        partnerHash = transaction.to
-                    }
-                    else {
-                        transactionType = "+"
-                        partnerHash = transaction.from
-                    }
-
-                    val newTransaction = Transaction(
-                        transactionHash = transaction.transactionHash,
-                        userRegistrationId = userId,
-                        type = transactionType,
-                        amount = transaction.amount.toDouble(),
-                        partnerHash = partnerHash,
-                        date = date,
-                    )
-
-                    addTransaction(newTransaction)
-                }
-            }
-        }
     }
 }

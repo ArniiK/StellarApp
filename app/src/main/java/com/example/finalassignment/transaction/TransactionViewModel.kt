@@ -6,16 +6,15 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import android.widget.Toast
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.*
+import com.example.finalassignment.DbUpdateService
 import com.example.finalassignment.StellarService
 import com.example.finalassignment.cryptography.Encryption
 import com.example.finalassignment.cryptography.HashedPinEncryptedData
-import com.example.finalassignment.roomdb.PartnerRepository
-import com.example.finalassignment.roomdb.UserRegistrationDatabase
+import com.example.finalassignment.roomdb.*
 import com.example.finalassignment.transaction.partners.AllPartnersDBResponse
 import com.example.finalassignment.transaction.partners.PartnerDBResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.example.finalassignment.roomdb.PartnerDB
 import com.example.finalassignment.singleton.ActiveUserSingleton
 import com.example.finalassignment.transaction.partners.Partner
 import com.example.finalassignment.transaction.partners.PinValidationResponse
@@ -25,13 +24,17 @@ import javax.crypto.SecretKey
 
 class TransactionViewModel(application: Application) : AndroidViewModel(application) {      //view model pre transakciu a pin
 
+    var currentUser: LiveData<UserRegistration>? = null
     var getAllPartners: LiveData<List<PartnerDB>>
     var getPartnerByPK = MutableLiveData<PartnerDB>()
     private val partnerRepository: PartnerRepository
+    private val userRegistrationRepository: UserRegistrationRepository
 
     init {
         val partnerDAO =  UserRegistrationDatabase.getDatabase(application).partnerDAO()
         partnerRepository = PartnerRepository(partnerDAO)
+        val userRegistrationDao = UserRegistrationDatabase.getDatabase(application).userRegistrationDAO()
+        userRegistrationRepository = UserRegistrationRepository(userRegistrationDao)
         getAllPartners = partnerRepository.getAllPartners
     }
 
@@ -52,6 +55,11 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch(Dispatchers.IO){
             getPartnerByPK = partnerRepository.getPartnerByPK(pK) as MutableLiveData<PartnerDB>
         }
+    }
+
+    fun getCurrentUser(userId: Int): LiveData<UserRegistration> {
+        currentUser = userRegistrationRepository.getUserById(userId)
+        return currentUser!!
     }
 
     var _publicKey = MutableLiveData<String>()
@@ -139,7 +147,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     init {
 
         _publicKey.value = ""
-        _balance.value = "100"
+        _balance.value = "1000"
         _amount.value = ""
         _pin.value = ""
         //_partnerKey.value =""
@@ -383,6 +391,12 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
                     }
 
                 }
+            }
+            GlobalScope.launch(Dispatchers.IO) {
+                DbUpdateService.updateBalance(ActiveUserSingleton.id, ActiveUserSingleton.publicKey)
+            }
+            GlobalScope.launch(Dispatchers.IO) {
+                DbUpdateService.updateTransactions(ActiveUserSingleton.id, ActiveUserSingleton.publicKey)
             }
         }
     }

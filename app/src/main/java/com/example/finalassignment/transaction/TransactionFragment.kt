@@ -12,10 +12,16 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalassignment.R
 import com.example.finalassignment.StellarService
 import com.example.finalassignment.databinding.FragmentTransactionBinding
+import com.example.finalassignment.history.HistoryAdapter
+import com.example.finalassignment.roomdb.Transaction
+import com.example.finalassignment.roomdb.UserRegistration
+import com.example.finalassignment.singleton.ActiveUserSingleton
 import com.example.finalassignment.transaction.partners.BeneficiariesFragment
+import kotlinx.android.synthetic.main.fragment_transaction.*
 import java.security.PublicKey
 
 
@@ -40,6 +46,11 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction,container, false)
 
         viewModel = ViewModelProvider(this).get(TransactionViewModel::class.java)
+        viewModel.getCurrentUser(ActiveUserSingleton.id).observe(viewLifecycleOwner,
+            Observer<UserRegistration> { user ->
+                walletBalanceTextView.text = user.balance.toString()
+        })
+
         binding.transactionViewModel = viewModel
 
 //        viewModel.eventTransactionSuccess.observe(viewLifecycleOwner, Observer <Boolean> {  transactionSuccessful ->

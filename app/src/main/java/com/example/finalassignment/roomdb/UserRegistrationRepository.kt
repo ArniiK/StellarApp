@@ -15,7 +15,7 @@ class UserRegistrationRepository(
     suspend fun getUserByPublicId(publicId: String): LiveData<UserRegistration> {
         return userRegistrationDAO.getUserByPublicId(publicId)
     }
-    suspend fun getUserById(id: Int): LiveData<UserRegistration> {
+    fun getUserById(id: Int): LiveData<UserRegistration> {
         return userRegistrationDAO.getUserById(id)
     }
     suspend fun updateBalanceByUserId(id: Int, balance: Double) {

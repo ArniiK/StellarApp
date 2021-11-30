@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
+import com.example.finalassignment.DbUpdateService
 import com.example.finalassignment.LoginFragmentDirections
 import com.example.finalassignment.R
 import com.example.finalassignment.StellarService
@@ -179,10 +180,10 @@ class PinFragment : DialogFragment(), View.OnClickListener {
                 initActiveUserToSingleton(user)
 
                 GlobalScope.launch(Dispatchers.IO) {
-                    mUserRegistrationViewModel.updateBalance(ActiveUserSingleton.id, ActiveUserSingleton.publicKey)
+                    DbUpdateService.updateBalance(ActiveUserSingleton.id, ActiveUserSingleton.publicKey)
                 }
                 GlobalScope.launch(Dispatchers.IO) {
-                    mHistoryViewModel.updateTransactions(ActiveUserSingleton.id, ActiveUserSingleton.publicKey)
+                    DbUpdateService.updateTransactions(ActiveUserSingleton.id, ActiveUserSingleton.publicKey)
                 }
 
                 Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_LONG).show()

@@ -68,9 +68,4 @@ class UserRegistrationViewModel(application: Application): AndroidViewModel(appl
         return bool
 
     }
-
-    suspend fun updateBalance(userId: Int, publicKey: String) {
-        val balance = StellarService.getBalanceByPublicKey(publicKey)
-        repository.updateBalanceByUserId(userId, balance)
-    }
 }
