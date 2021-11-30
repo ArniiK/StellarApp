@@ -27,8 +27,11 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     var currentUser: LiveData<UserRegistration>? = null
     var getAllPartners: LiveData<List<PartnerDB>>
     var getPartnerByPK = MutableLiveData<PartnerDB>()
+      //emptyList()
     private val partnerRepository: PartnerRepository
     private val userRegistrationRepository: UserRegistrationRepository
+
+    var getAllPartnersNew :MutableLiveData<List<PartnerDB>> = MutableLiveData<List<PartnerDB>>()
 
     init {
         val partnerDAO =  UserRegistrationDatabase.getDatabase(application).partnerDAO()
@@ -60,6 +63,23 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     fun getCurrentUser(userId: Int): LiveData<UserRegistration> {
         currentUser = userRegistrationRepository.getUserById(userId)
         return currentUser!!
+    }
+
+     fun getAllPartnersByActiveUser(pK: String){
+
+        // var getAllPartnersByPk: MutableLiveData<List<PartnerDB>> = MutableLiveData<List<PartnerDB>>()
+         // var result = MutableLiveData<List<PartnerDB>>()
+
+        viewModelScope.launch(){
+            //result = partnerRepository.getAllPartnersByActiveUser(pK)
+            getAllPartnersNew.value = partnerRepository.getAllPartnersByActiveUser(pK)
+            //getAllPartnersByPk = (partnerRepository.getAllPartnersByActiveUser(pK)) as MutableLiveData<List<PartnerDB>>
+            //getAllPartnersByPk = result.postValue()
+
+
+        }
+       // return  getAllPartnersByPk
+        //result.observe(lifeC)
     }
 
     var _publicKey = MutableLiveData<String>()
@@ -130,6 +150,10 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
     private var _eventDBPartnerAdded = MutableLiveData<PartnerDBResponse>()
     val eventDBPartnerAdded: LiveData<PartnerDBResponse>
+        get() = _eventDBPartnerAdded
+
+    private var _eventDBPartnerDeleted = MutableLiveData<PartnerDBResponse>()
+    val eventDBPartnerDeleted: LiveData<PartnerDBResponse>
         get() = _eventDBPartnerAdded
 
 
@@ -467,7 +491,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 //    }
 
 
-    fun onPartnerRemoval(position: Int){
+    fun onPartnerRemoval(partner: PartnerDB){
 
         //val toBeRemoved: PartnerDB? = _partnerList.value?.get(position)
         //val removalResponse = removePartnerFromDb(toBeRemoved!!, position)
@@ -479,7 +503,23 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 //        _eventPartnerFromDBremoval.value =   removalResponse
 
 
+        var ondelResponse = PartnerDBResponse()
 
+        viewModelScope.launch (Dispatchers.IO) {
+
+            try {   //pokus sa zmazat partnera
+                partnerRepository.deletePartner(partner)
+                ondelResponse.isSuccess = true
+                ondelResponse.message = "partner " + partner.nickName+ " deleted"
+            }
+            catch (e: Exception){
+
+                ondelResponse.isSuccess = true
+                ondelResponse.message = "partner deleting not successful"
+            }
+
+            _eventDBPartnerDeleted.postValue(ondelResponse)
+        }
 
 
     }
@@ -496,10 +536,10 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
         return dbRemResponse
     }
 
-    fun resetInputs(){
-
-
-
+    fun skuska(){
+//        viewModelScope.launch(Dispatchers.IO) {
+//            var partnersBypk = getAllPartnersByActiveUser(ActiveUserSingleton.publicKey)
+//        }
     }
 
     //partner adding functions
@@ -538,7 +578,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 //        newPartner.nickName = getPartnerAddingNickname.value.toString()
 //        newPartner.publicKey = getPartnerAddingKey.value.toString()
 
-        val newPartner = PartnerDB(getPartnerAddingNickname.value.toString(), getPartnerAddingKey.value.toString())
+        val newPartner = PartnerDB(0,getPartnerAddingKey.value.toString(),ActiveUserSingleton.publicKey, getPartnerAddingNickname.value.toString())
 
         //val persisted = true        //TODO: save to DB - provizorna premenna
 
