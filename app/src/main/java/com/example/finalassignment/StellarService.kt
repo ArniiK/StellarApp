@@ -37,8 +37,8 @@ object StellarService {
         val waitFor = CoroutineScope(Dispatchers.IO).async {
             val keyPair: KeyPair =
                 KeyPair.fromAccountId(publicKey)
-
-            var response = server.payments().forAccount(keyPair.accountId).limit(10).execute()
+        try {
+            var response = server.payments().forAccount(keyPair.accountId).limit(200).execute()
             while (response.records.isNotEmpty()) {
                 var pagingToken = ""
                 for (record in response.records) {
@@ -49,8 +49,9 @@ object StellarService {
                 }
                 response = server.payments().forAccount(keyPair.accountId).cursor(pagingToken).limit(10).execute()
             }
+        } catch (e: Exception) {
 
-
+        }
             return@async payments
         }
         waitFor.await()
@@ -61,15 +62,19 @@ object StellarService {
         var accountBalance: Double = 0.00
 
         val waitFor = CoroutineScope(Dispatchers.IO).async {
-            val keyPair: KeyPair =
-                KeyPair.fromAccountId(publicKey)
+            try {
+                val keyPair: KeyPair =
+                    KeyPair.fromAccountId(publicKey)
 
-            val account: AccountResponse = server.accounts().account(keyPair.getAccountId())
-            for (balance in account.balances) {
-                if (balance.assetType == "native"){
-                    accountBalance = balance.balance.toDouble()
-                    return@async accountBalance
+                val account: AccountResponse = server.accounts().account(keyPair.getAccountId())
+                for (balance in account.balances) {
+                    if (balance.assetType == "native"){
+                        accountBalance = balance.balance.toDouble()
+                        return@async accountBalance
+                    }
                 }
+            }
+            catch (e: Exception) {
             }
         }
         waitFor.await()
@@ -102,26 +107,26 @@ object StellarService {
             val destination: KeyPair =
                 KeyPair.fromAccountId(destination)
 
-
-            server.accounts().account(destination.getAccountId())
-
-            val sourceAccount: AccountResponse = server.accounts().account(source.getAccountId())
-
-            val transaction = Transaction.Builder(sourceAccount, Network.TESTNET)
-                .addOperation(
-                    PaymentOperation.Builder(
-                        destination.getAccountId(),
-                        AssetTypeNative(),
-                        amount.toString()
-                    ).build()
-                )
-                .setTimeout(180)
-                .setBaseFee(Transaction.MIN_BASE_FEE)
-                .build()
-
-            transaction.sign(source)
-
             try {
+                server.accounts().account(destination.getAccountId())
+
+                val sourceAccount: AccountResponse = server.accounts().account(source.getAccountId())
+
+                val transaction = Transaction.Builder(sourceAccount, Network.TESTNET)
+                    .addOperation(
+                        PaymentOperation.Builder(
+                            destination.getAccountId(),
+                            AssetTypeNative(),
+                            amount.toString()
+                        ).build()
+                    )
+                    .setTimeout(180)
+                    .setBaseFee(Transaction.MIN_BASE_FEE)
+                    .build()
+
+                transaction.sign(source)
+
+
                 val response: SubmitTransactionResponse = server.submitTransaction(transaction)
                 if (response.isSuccess) {
                     successful = true
