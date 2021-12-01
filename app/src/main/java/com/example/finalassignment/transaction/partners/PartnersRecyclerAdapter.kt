@@ -20,7 +20,7 @@ class PartnersRecyclerAdapter(private var itemList: List<PartnerDB> = mutableLis
     private var _binding:PartnerAccountItemBinding ?= null
     private val binding get() = _binding!!
 
-    //TODO doimplementovat itemlistener na mazanie
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PartnersViewHolder {
         // val view = LayoutInflater.from(parent.context).inflate(R.layout.partner_account_item, parent, false)
         _binding = PartnerAccountItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)

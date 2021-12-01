@@ -26,7 +26,7 @@ import java.security.PublicKey
 
 
 class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragment.OnPartnerPKfetchedListener, TransactionPinFragment.OnTransactionConfirmedListener {
-    // TODO: Rename and change types of parameters
+
     private lateinit var partnersBtn: ImageButton
     private lateinit var spendBtn: Button
     private lateinit var binding: FragmentTransactionBinding
@@ -123,24 +123,6 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
         dialog.show(activity?.supportFragmentManager!!, "PinDialog")
     }
 
-    //TODO do live data pridat amount a publickey
-//    private fun performTransaction(){
-//
-//        if (verifyTransaction()){
-//
-//            val dialog = PinFragment()
-//            var args: Bundle? = Bundle()
-//
-//            args?.putString("publicKey", publicKey)
-//            args?.putString("amount", amount)
-//            dialog.setArguments(args)
-//
-//            dialog.setOnTransactionConfirmedListener(this)
-//            dialog.show(activity?.supportFragmentManager!!, "PinDialog")
-//    }
-
-
-
 
     override fun onPartnerFetched(publicKey: String) {
         binding.PKInputField.beneficiaryPKInputText.setText(publicKey)
@@ -179,16 +161,7 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
 
     override fun onTransactionConfirmed(decryptedPrivateKey: String) {
 
-
         viewModel.performTransaction(decryptedPrivateKey)       //zavola sa vykonanie transakcie vo viewmodeli
-        //        //TODO tranzakcia
-//        val transactionExecuted = true
-//
-//        if (transactionExecuted) {
-//            //TODO refresh balance from stellar network
-//            Toast.makeText(activity, "Your transaction was performed", Toast.LENGTH_LONG).show()
-//        }
-//        else  Toast.makeText(activity, "Transaction error - not executed", Toast.LENGTH_LONG).show()
     }
 
 }

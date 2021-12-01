@@ -39,31 +39,6 @@ class UserRegistrationViewModel(application: Application): AndroidViewModel(appl
             userData = repository.getUserByPublicId(publicKey)
             Log.d("userData", "user data " + userData)
 
-            //TODO: ziskat z dbs zaznam podla publicKey, ziskat salt, iv, encryptedText
-            //odkomentuj :D
-            
-//            //salt z dbs
-//            val salt: ByteArray = ???
-//            //iv z dbs
-//            val inicializationVector: ByteArray = ???
-//
-//            //toto je privateKey(zasifrovany) z dbs
-//            val encryptedTextFromDB: String = ???
-//
-//            val e = Encryption()
-//            //zahashujem novozadany pin pomocou saltu z dbs
-//            val secretKey: SecretKey = e.hashPinLogin(salt, pinCode)
-//
-//            // prazdny object
-//            var hped = HashedPinEncryptedData()
-//
-//            //hpedNew bude obsahovat po zbehnuti iba encryptedText->novozasifrovany text(privateKey) podla zahashovaneho pinu, ostatne atributy tu mas uz
-//            val hpedNew: HashedPinEncryptedData? = e.encrypt(privateKey, secretKey, inicializationVector, hped)
-//
-//            //skontrolujem ci sa novy encryptedText(zasifrovany privateKey) rovna tomu v dbs, ak ano prihlasim
-//            if(hpedNew.encryptedText.equals(encryptedTextFromDB)) {
-//                bool = true
-//            }
         }
         return bool
 

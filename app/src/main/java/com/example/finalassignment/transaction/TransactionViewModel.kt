@@ -481,9 +481,6 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
 
         val newPartner = PartnerDB(0,getPartnerAddingKey.value.toString(),ActiveUserSingleton.publicKey, getPartnerAddingNickname.value.toString())
-
-        //val persisted = true        //TODO: save to DB - provizorna premenna
-
         val response = PartnerDBResponse()
 
         try{

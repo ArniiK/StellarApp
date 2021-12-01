@@ -36,7 +36,7 @@ class HistoryFragment : Fragment() {
 
         viewModel.getTransactionsForId(ActiveUserSingleton.id).observe(viewLifecycleOwner,
         Observer<List<Transaction>> { transactions ->
-            historyAdapter = HistoryAdapter(transactions)
+            historyAdapter = HistoryAdapter(transactions.reversed())
             binding.rvTransactionHistory.adapter = historyAdapter
             binding.rvTransactionHistory.layoutManager = LinearLayoutManager(activity)
         }

@@ -60,15 +60,12 @@ class AddPartnerViewModel : ViewModel(){
         val newPartner = Partner()
         newPartner.nickName = getPartnerAddingNickname.value.toString()
         newPartner.publicKey = getPartnerAddingKey.value.toString()
-
-        val persisted = true        //TODO: save to DB - provizorna premenna
+        
         val response = PartnerDBResponse()
-        if (persisted){
-
-
-            response.message = "Partner added - success"
-            response.isSuccess = true
-        }
+        
+        response.message = "Partner added - success"
+        response.isSuccess = true
+        
 
         return response
     }

@@ -152,19 +152,6 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
         dialog.show(activity?.supportFragmentManager!!, "addPartnerDialog")
     }
 
-    fun fillItemList(){
-
-        //TODO natiahnut items z DB
-
-        //provizorne data
-//        var partnerViewItem = P("Public key", "Partner nickname")
-//        var partnerViewItem1 = PartnerViewItem("Ox000000000000000000", "Petrik")
-//
-//        itemlist = mutableListOf<Partner>()
-//        itemlist.add(Partner)
-//        itemlist.add(partnerViewItem)
-
-    }
 
     private fun setupRecycler(){        //??????ak bude na db async call, do callbacku ked budu itemy moze ist vytvorenie recyclera
 
@@ -211,7 +198,6 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
 
     override fun onDelete(partnerToDel: PartnerDB) {
 
-        //TODO removal function (DB)
 
         // voviewmodeli sa osetri vymazanie partnera, observuje sa response,
         // on success sa zmaze aj v recycler view + partner zozname

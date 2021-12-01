@@ -88,7 +88,7 @@ class AddPartnerFragment : DialogFragment(), View.OnClickListener {
 
     fun addPartner(){
 //        var isSuccessful = true
-//        //TODO implement adding to the db
+//
 //
 //        if (isSuccessful){
 //

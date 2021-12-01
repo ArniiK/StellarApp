@@ -34,20 +34,12 @@ import com.example.finalassignment.cryptography.HashedPinEncryptedData
 import kotlin.jvm.Throws
 
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+
 private lateinit var binding: FragmentRegistrationBinding
 
 
-/**
- * A simple [Fragment] subclass.
- * Use the [RegistrationFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class RegistrationFragment : Fragment(), View.OnClickListener {
-    // TODO: Rename and change types of parameters
+
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var binding: FragmentRegistrationBinding
@@ -65,8 +57,7 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
         }
     }
 
@@ -177,16 +168,13 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
     }
 
     fun register(){
-        //TODO: mala by tu byt stelar funkcionalita - registracia na testnet
 
         //DATABASE
 
-
         Log.v("register function", "Register function launched")
-        //todo: dopln registraciu
+
         val action = RegistrationFragmentDirections.actionRegistrationFragmentToLoginFragment()
         view?.findNavController()?.navigate(action)
-
 
     }
 
@@ -232,25 +220,4 @@ class RegistrationFragment : Fragment(), View.OnClickListener {
         return (pin.length==4)
     }
 
-
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment RegistrationFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            RegistrationFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }
