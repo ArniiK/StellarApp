@@ -58,7 +58,7 @@ class PartnersRecyclerAdapter(private var itemList: List<PartnerDB> = mutableLis
 
                     if (adapterPosition != RecyclerView.NO_POSITION){
 
-                        delListener.onDelete(adapterPosition)
+                        delListener.onDelete(itemList.get(adapterPosition)) //vrati objekt partnerDB na vymazanie
                     }
 
                 }
@@ -81,7 +81,7 @@ class PartnersRecyclerAdapter(private var itemList: List<PartnerDB> = mutableLis
 
     interface OnDeleteItemListener{
 
-        fun onDelete(position: Int)
+        fun onDelete(partnerToDel: PartnerDB)
     }
 
     fun setOnDeleteListener(listener: OnDeleteItemListener) {

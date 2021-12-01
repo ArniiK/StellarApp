@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.databinding.DataBindingUtil
 import com.example.finalassignment.databinding.FragmentAfterLoginBinding
+import com.example.finalassignment.singleton.ActiveUserSingleton
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -19,7 +20,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [AfterLogin.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AfterLogin : Fragment(), View.OnClickListener {
+class AfterLogin : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -45,8 +46,7 @@ class AfterLogin : Fragment(), View.OnClickListener {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_after_login, container,false)
         val view = binding.root
 
-        setAccountsBtn = binding.afterLoginCreateBtn
-        setAccountsBtn.setOnClickListener(this)
+        binding.afterLoginPKTextView.setText(ActiveUserSingleton.publicKey.toString())
         return view
         //return inflater.inflate(R.layout.fragment_after_login, container, false)
     }
@@ -71,15 +71,5 @@ class AfterLogin : Fragment(), View.OnClickListener {
             }
     }
 
-    override fun onClick(v: View?) {
-        setAccounts()
-    }
-
-    fun setAccounts(){
-
-        binding.afterLoginPKTextView.text = "Moj Public Key"
-        binding.afterLoginSKTextView.text = "Moj Secret key"
-
-    }
 
 }

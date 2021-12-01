@@ -11,14 +11,18 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalassignment.R
 import com.example.finalassignment.databinding.FragmentBeneficiariesBinding
 import com.example.finalassignment.databinding.PartnerAccountItemBinding
 import com.example.finalassignment.partners.PartnersRecyclerAdapter
 import com.example.finalassignment.roomdb.PartnerDB
+import com.example.finalassignment.singleton.ActiveUserSingleton
 import com.example.finalassignment.transaction.TransactionViewModel
 import com.example.finalassignment.transaction.ValidationResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class BeneficiariesFragment() : DialogFragment(), View.OnClickListener,
@@ -68,6 +72,8 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
 
             it ->
             itemlist = it       //zmeni sa obsah partner db, zmen recycler
+
+
             changeItemList()
 
         } )
@@ -77,6 +83,22 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
             onPartnerPicked(pkPicked)
 
         })
+
+        transactionViewModel.eventDBPartnerDeleted.observe(viewLifecycleOwner, Observer<PartnerDBResponse> { response ->
+
+            if (!response.isSuccess){   //neuspesny update = vypis
+                Toast.makeText(activity,response.message,Toast.LENGTH_LONG).show()
+            }
+        })
+
+
+//            transactionViewModel.getAllPartnersNew.observe(this,Observer{
+//
+//
+//                itemlist = it
+//
+//            })
+
 
 //        transactionViewModel.eventUserFromDBremoval.observe( viewLifecycleOwner, Observer<PartnerDBResponse>{
 //
@@ -162,7 +184,20 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
 
         //adapter?.changePartnerList(binding.transactionViewModel?._partnerList?.value!!)
         //adapter?.changePartnerList(binding.transactionViewModel?.getAllPartners?.value!!)
-        adapter?.changePartnerList(itemlist)
+
+        var partnersList = mutableListOf<PartnerDB>()
+
+        for (item in itemlist){
+
+            if (item.owner_publicKey.equals(ActiveUserSingleton.publicKey)){
+
+                partnersList.add(item)
+            }
+
+        }
+
+
+        adapter?.changePartnerList(partnersList)
         adapter?.notifyDataSetChanged()
     }
 
@@ -174,13 +209,13 @@ PartnersRecyclerAdapter.OnDeleteItemListener,  AddPartnerFragment.OnAccountAdded
 
 
 
-    override fun onDelete(position: Int) {
+    override fun onDelete(partnerToDel: PartnerDB) {
 
         //TODO removal function (DB)
 
         // voviewmodeli sa osetri vymazanie partnera, observuje sa response,
         // on success sa zmaze aj v recycler view + partner zozname
-        binding.transactionViewModel?.onPartnerRemoval(position)
+        binding.transactionViewModel?.onPartnerRemoval(partnerToDel)
 
 
 //        val wasRemoved = true

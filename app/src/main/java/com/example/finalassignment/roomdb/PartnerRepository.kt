@@ -1,6 +1,7 @@
 package com.example.finalassignment.roomdb
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 
 class PartnerRepository(private val partnerDAO: PartnerDAO) {
 
@@ -8,6 +9,10 @@ class PartnerRepository(private val partnerDAO: PartnerDAO) {
 
     suspend fun addPartner(partnerDB: PartnerDB){
         partnerDAO.addPartner(partnerDB)
+    }
+
+    suspend fun getAllPartnersByActiveUser(pK: String): List<PartnerDB> {
+        return partnerDAO.getAllPartnersByActiveUser(pK)
     }
 
     suspend fun getPartnerByPK(pk: String):LiveData<PartnerDB>{
