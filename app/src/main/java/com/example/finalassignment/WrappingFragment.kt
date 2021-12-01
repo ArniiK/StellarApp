@@ -14,8 +14,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.finalassignment.databinding.FragmentWrappingBinding
+import com.example.finalassignment.singleton.ActiveUserSingleton
 import com.example.finalassignment.transaction.PinFragment
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -55,6 +59,9 @@ class WrappingFragment : Fragment(), TabLayout.OnTabSelectedListener, LogoutFrag
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_wrapping, container,false)
         binding.logoutItem.setOnClickListener(){
             logOutUser()
+        }
+        binding.refreshItem.setOnClickListener() {
+            refreshDb()
         }
         val view = binding.root
         addToolbar()
@@ -115,6 +122,13 @@ class WrappingFragment : Fragment(), TabLayout.OnTabSelectedListener, LogoutFrag
 
         dialog.setOnLogoutConfirmedListener(this)
         dialog.show(activity?.supportFragmentManager!!, "LogoutDialog")
+    }
+
+    private fun refreshDb() {
+        GlobalScope.launch(Dispatchers.IO){
+            DbUpdateService.updateBalance(ActiveUserSingleton.id, ActiveUserSingleton.publicKey)
+            DbUpdateService.updateTransactions(ActiveUserSingleton.id, ActiveUserSingleton.publicKey)
+        }
     }
 
     override fun onTabSelected(tab: TabLayout.Tab?) {

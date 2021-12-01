@@ -2,8 +2,6 @@ package com.example.finalassignment.transaction
 
 import android.app.Application
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
-import android.widget.Toast
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.*
 import com.example.finalassignment.DbUpdateService
@@ -19,6 +17,7 @@ import com.example.finalassignment.singleton.ActiveUserSingleton
 import com.example.finalassignment.transaction.partners.Partner
 import com.example.finalassignment.transaction.partners.PinValidationResponse
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import org.stellar.sdk.KeyPair
 import javax.crypto.SecretKey
 
@@ -161,101 +160,100 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
 
     fun validateTransaction(){
-
+        viewModelScope.launch (Dispatchers.IO){
+            _eventValidationResponse.postValue(performValidation())
+        }
         //_eventInputsVerified.value = perform_validation()
-        _eventValidationResponse.value = perform_validation()
+
 
     }
 
-        fun perform_validation(): ValidationResponse{     //skontroluj zostatok, skontroluj, ci existuje moj ucet, jeho ucet, otvor zadanie pinu
+    suspend fun performValidation(): ValidationResponse{
+        val response = ValidationResponse()
 
-            val response = ValidationResponse()
+        //skontroluj zostatok, skontroluj, ci existuje moj ucet, jeho ucet, otvor zadanie pinu
+        var waitFor = viewModelScope.async(Dispatchers.IO) {
+            //TODO nepouzivat zobrazeny balance, treba zo stellaru natiahnut, ten je aktualny
+            if((balance.value?.toDoubleOrNull() != null)  || (getamount.value?.toDoubleOrNull() != null) ) {
 
-        //TODO nepouzivat zobrazeny balance, treba zo stellaru natiahnut, ten je aktualny
-        if((balance.value?.toDoubleOrNull() != null)  || (getamount.value?.toDoubleOrNull() != null) ) {
-
-            if ((!getamount.value.toString().isEmpty()) && (!balance.value.toString().isEmpty())) {    //ci je balance double cislo
-                //amount field not empty
+                if ((!getamount.value.toString().isEmpty()) && (!balance.value.toString().isEmpty())) {    //ci je balance double cislo
+                    //amount field not empty
                     Log.i("input validation", "amount field not empty " + balance.value.toString() )
 
-                val amount_decimal = getamount.value.toString().toDouble()
-                val balance_decimal = balance.value.toString().toDouble()
+                    val amountDecimal = getamount.value.toString().toDouble()
+                    val balanceDecimal = StellarService.getBalanceByPublicKey(ActiveUserSingleton.publicKey)
 
-                if (balance_decimal < amount_decimal) {
-                    // insufficient balance
-                    Log.i("input validation", "insufficient balance")
-                    //Toast.makeText(activity, "Insufficient balance", Toast.LENGTH_LONG).show()
-                    response.isSuccess = false
-                    response.message = "Insufficient balance"
-                    return response
-
-                } else {
-
-                    //balance sufficient, perform account existance check
-                    Log.i("input validation", "balance sufficient, perform account existance check")
-
-
-                    if (getpublicKey.value.toString().isNotEmpty()){
-                        //publickey field not empty
-                        Log.i("input validation","publickey not field empty")
-
-                        if (checkAccountExist(getpublicKey.value.toString())) {
-
-                            // state of sufficient balance and existing recipient account
-                            //PIN verification
-                            Log.i("input validation","state of sufficient balance and existing recipient account, check pin")
-                            response.message = "Validatation succesfull"
-                            response.isSuccess = true
-                            return response
-
-                        }
-                        //not existing account
-                        else {
-                            Log.i("input validation","public key not on stelar network")
-                           // Toast.makeText(activity,"Recipient account not on stellar network", Toast.LENGTH_LONG).show()
-                            response.message = "Recipient account not on stellar network"
-                            response.isSuccess = false
-                            return response
-                        }
-
-                    }
-                    else{
-                        //Toast.makeText(activity,"Recipient account field empty", Toast.LENGTH_LONG).show()
-                        Log.i("input validation","publickey field empty")
-                        response.message = "Recipient Public key empty"
+                    if (balanceDecimal < amountDecimal) {
+                        // insufficient balance
+                        Log.i("input validation", "insufficient balance")
+                        //Toast.makeText(activity, "Insufficient balance", Toast.LENGTH_LONG).show()
                         response.isSuccess = false
-                        return response
+                        response.message = "Insufficient balance"
+                        return@async response
+
+                    } else {
+
+                        //balance sufficient, perform account existance check
+                        Log.i("input validation", "balance sufficient, perform account existance check")
+
+
+                        if (getpublicKey.value.toString().isNotEmpty()){
+                            //publickey field not empty
+                            Log.i("input validation","publickey not field empty")
+
+                            var accountExists = StellarService.checkAccountExists(getpublicKey.value.toString())
+                            if (accountExists) {
+
+                                // state of sufficient balance and existing recipient account
+                                // PIN verification
+                                Log.i("input validation","state of sufficient balance and existing recipient account, check pin")
+                                response.message = "Validatation succesfull"
+                                response.isSuccess = true
+                                return@async response
+
+                            }
+                            //not existing account
+                            else {
+                                Log.i("input validation","public key not on stelar network")
+                                // Toast.makeText(activity,"Recipient account not on stellar network", Toast.LENGTH_LONG).show()
+                                response.message = "Recipient account not on stellar network"
+                                response.isSuccess = false
+                                return@async response
+                            }
+
+                        }
+                        else{
+                            //Toast.makeText(activity,"Recipient account field empty", Toast.LENGTH_LONG).show()
+                            Log.i("input validation","publickey field empty")
+                            response.message = "Recipient Public key empty"
+                            response.isSuccess = false
+                            return@async response
+                        }
+
+
+
+
                     }
-
-
-
+                } else {
+                    // ammount field empty
+                    Log.i("input validation","ammount, balance empty")
+                    //Toast.makeText(activity, "Amount field empty", Toast.LENGTH_LONG).show()
+                    response.message = "Amount field empty"
+                    response.isSuccess = false
+                    return@async response
 
                 }
-            } else {
-                // ammount field empty
-                Log.i("input validation","ammount, balance empty")
-                //Toast.makeText(activity, "Amount field empty", Toast.LENGTH_LONG).show()
-                response.message = "Amount field empty"
+            }
+            else{
+                Log.i("input validation","balance not a number decimal")
+                // Toast.makeText(activity, "Your balance is not double number", Toast.LENGTH_LONG).show()
+                response.message = "Balance not a number dec"
                 response.isSuccess = false
-                return response
-
+                return@async response
             }
         }
-        else{
-            Log.i("input validation","balance not a number decimal")
-           // Toast.makeText(activity, "Your balance is not double number", Toast.LENGTH_LONG).show()
-            response.message = "Balance not a number dec"
-            response.isSuccess = false
-            return response
-        }
-    }
-
-
-    private fun checkAccountExist(publicKey: String) :Boolean{
-
-        //TODO check if account exists on stellar network
-
-        return true
+        waitFor.await()
+        return response
     }
 
 //    private fun checkAccountNotEmpty(publicKey: String) :Boolean{

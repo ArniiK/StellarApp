@@ -38,13 +38,19 @@ object StellarService {
             val keyPair: KeyPair =
                 KeyPair.fromAccountId(publicKey)
 
-            val response = server.payments().forAccount(keyPair.accountId).execute()
-
-            for (record in response.records) {
-                if (record is PaymentOperationResponse) {
-                    payments.add(record)
+            var response = server.payments().forAccount(keyPair.accountId).limit(10).execute()
+            while (response.records.isNotEmpty()) {
+                var pagingToken = ""
+                for (record in response.records) {
+                    if (record is PaymentOperationResponse) {
+                        payments.add(record)
+                        pagingToken = record.pagingToken
+                    }
                 }
+                response = server.payments().forAccount(keyPair.accountId).cursor(pagingToken).limit(10).execute()
             }
+
+
             return@async payments
         }
         waitFor.await()
@@ -76,7 +82,7 @@ object StellarService {
         val waitFor = CoroutineScope(Dispatchers.IO).async {
             try {
                 val destination: KeyPair = KeyPair.fromAccountId(publicKey)
-                server.accounts().account(destination.getAccountId())
+                server.accounts().account(destination.accountId)
             } catch (e: Exception) {
                 exists = false
             }
