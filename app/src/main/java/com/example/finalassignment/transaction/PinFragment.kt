@@ -49,12 +49,7 @@ class PinFragment : DialogFragment(), View.OnClickListener {
 
         val receivedArgs = getArguments()
         if (receivedArgs != null) {
-            if(receivedArgs.getString("privateKey")!=null){
-                privateKey = receivedArgs.getString("privateKey")
-            }else if (receivedArgs.getString("publicKey")!=null){
-                recipientPublicKey = receivedArgs.getString("publicKey")
-                amount = receivedArgs.getString("amount")
-            }
+            privateKey = receivedArgs.getString("privateKey")
         }
 
 
@@ -86,41 +81,9 @@ class PinFragment : DialogFragment(), View.OnClickListener {
                 binding.pinDismissButton -> closeTransaction()
             }
             privateKey = null
-
-        }else if(recipientPublicKey != null){
-            when(v){
-                binding.pinConfirmButton -> confirmTransactionSend(recipientPublicKey, amount)
-                binding.pinDismissButton -> closeTransaction()
-            }
-            recipientPublicKey = null
         }
-
     }
-//
-//    class CreateAcc(): AsyncTask<Unit, Unit, Unit>(), ViewModelStoreOwner, LifecycleOwner {
-//        private lateinit var mUserRegistrationViewModel: UserRegistrationViewModel
-//
-//        private var test: List<UserRegistration> = emptyList()
-//        @SuppressLint("WrongThread")
-//        override fun doInBackground(vararg params: Unit?) {
-//            mUserRegistrationViewModel = ViewModelProvider(this).get(UserRegistrationViewModel::class.java)
-//            mUserRegistrationViewModel.getAllUsers.observe(this) { it ->
-//                test = it
-//            }
-//
-//
-//
-//        }
-//
-//        override fun getViewModelStore(): ViewModelStore {
-//            TODO("Not yet implemented")
-//        }
-//
-//        override fun getLifecycle(): Lifecycle {
-//            TODO("Not yet implemented")
-//        }
-//
-//    }
+
 
     @Throws(IllegalArgumentException::class)
     private fun confirmTransactionLogin(privateKey: String?){
@@ -140,18 +103,14 @@ class PinFragment : DialogFragment(), View.OnClickListener {
             for (item in test) {
                 if (item.publicKey.equals(publicKey)) {
                     user = item
-
-                    Log.d("useri obtainuty", "useri obtainuty")
                     break
                 }
 
             }
 
             if (user != null) {
-                Log.d("user null? ", "user null? ")
                 //            //salt z dbs
                 val salt: ByteArray? = user.salt
-                Log.d("salt generated ", "salt generated  ")
                 //iv z dbs
                 val inicializationVector: ByteArray? = user.iv
 
@@ -214,61 +173,7 @@ class PinFragment : DialogFragment(), View.OnClickListener {
         ActiveUserSingleton.salt = user.salt
     }
 
-    private fun confirmTransactionSend(recipientPublicKey: String?, amount: String?){
-        val pinCode = binding.editTextNumberPassword.text.toString()
 
-        var isPinCorrect = false
-
-        //vytiahnem prihlaseneho usera z dbs ...
-        val user: ActiveUserSingleton = ActiveUserSingleton
-
-        //z daneho usera ziskam data
-        //salt z dbs
-        val salt: ByteArray? = user.salt
-        //iv z dbs
-        val inicializationVector: ByteArray? = user.iv
-        //toto je privateKey(zasifrovany) z dbs
-        val encryptedSenderPrivateKeyFromDB: String? = user.privateKey
-
-        val senderPublicKeyFromDB: String? = user.publicKey
-
-
-        val e = Encryption()
-        //zahashujem novozadany pin pomocou saltu z dbs
-        val secretKey: SecretKey = e.hashPinLogin(salt, pinCode)
-
-        // prazdny object
-        var hped = HashedPinEncryptedData()
-        hped.encryptedText = encryptedSenderPrivateKeyFromDB
-        hped.hashedPin = secretKey
-
-        val decryptedPrivateKey = e.decrypt(hped, inicializationVector)
-
-        val source = KeyPair.fromSecretSeed(decryptedPrivateKey)
-        val senderPublicKeyFromDecryption = source.accountId
-
-        //skontrolujem ci sa novy publicKey ziskany z desifrovaneho(pomocou zadaneho pinu) privateKey, rovna public Key z databazy pre prihlaseneho usera
-        if(senderPublicKeyFromDecryption.equals(senderPublicKeyFromDB)) {
-            isPinCorrect = true
-
-        }
-
-        if (isPinCorrect == true){
-
-            Toast.makeText(requireContext(),"Succesfully confirmed",Toast.LENGTH_LONG).show()
-
-            //vykonaj tranzakciu
-
-
-            dialog?.cancel() //zavriem dialog
-            //previest tranzakciu v transaction fragment, ak sa podari, toast ze sa podarila, ak nie tak ze sa nepodarila, znovunacitanie zostatku a jeho refresh
-
-
-            listener.onTransactionConfirmed()
-        }
-        else Toast.makeText(activity,"Incorrect pin, try again", Toast.LENGTH_LONG).show()
-
-    }
 
     private fun closeTransaction(){
         Toast.makeText(activity,"Authorization closed", Toast.LENGTH_LONG).show()

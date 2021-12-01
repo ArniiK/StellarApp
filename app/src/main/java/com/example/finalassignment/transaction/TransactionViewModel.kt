@@ -2,6 +2,7 @@ package com.example.finalassignment.transaction
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.*
 import com.example.finalassignment.DbUpdateService
@@ -197,7 +198,6 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
         //skontroluj zostatok, skontroluj, ci existuje moj ucet, jeho ucet, otvor zadanie pinu
         var waitFor = viewModelScope.async(Dispatchers.IO) {
-            //TODO nepouzivat zobrazeny balance, treba zo stellaru natiahnut, ten je aktualny
             if((balance.value?.toDoubleOrNull() != null)  || (getamount.value?.toDoubleOrNull() != null) ) {
 
                 if ((!getamount.value.toString().isEmpty()) && (!balance.value.toString().isEmpty())) {    //ci je balance double cislo
@@ -280,115 +280,93 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
         return response
     }
 
-//    private fun checkAccountNotEmpty(publicKey: String) :Boolean{
-//
-//        if( binding.PKInputField.beneficiaryPKInputText.text.toString().isEmpty()){
-//
-//            return false
-//        }
-//
-//        return true
-//    }
-//
-//
-//    override fun onTransactionConfirmed() {
-//
-//        //TODO tranzakcia
-//        val transactionExecuted = true
-//
-//        if (transactionExecuted) {
-//            //TODO refresh balance from stellar network
-//            Toast.makeText(activity, "Your transaction was performed", Toast.LENGTH_LONG).show()
-//        }
-//        else  Toast.makeText(activity, "Transaction error - not executed", Toast.LENGTH_LONG).show()
-//    }
-//
-//    fun getBalance(publicKey: PublicKey): Double{
-//
-//        return 1000.toDouble()
-//    }
 
 
     fun onPinConfirm(){
 
         val pinResponse = PinValidationResponse()
+        try{
+            if((getpin.value.toString().length == 4) && getpin.value.toString().isDigitsOnly()){    // field of 4 numbers
 
-        if((getpin.value.toString().length == 4) && getpin.value.toString().isDigitsOnly()){    // field of 4 numbers
+                val pinCode = getpin.value
 
-//            val publicKey = getpublicKey.value
-//            val amount = getamount.value
+                var isPinCorrect = false
 
-            val pinCode = getpin.value
+                //vytiahnem prihlaseneho usera z dbs ...
+                val user: ActiveUserSingleton = ActiveUserSingleton
 
-            var isPinCorrect = false
+                //z daneho usera ziskam data
+                //salt z dbs
+                val salt: ByteArray? = user.salt
+                //iv z dbs
+                val inicializationVector: ByteArray? = user.iv
+                //toto je privateKey(zasifrovany) z dbs
+                val encryptedSenderPrivateKeyFromDB: String? = user.privateKey
 
-            //vytiahnem prihlaseneho usera z dbs ...
-            val user: ActiveUserSingleton = ActiveUserSingleton
-
-            //z daneho usera ziskam data
-            //salt z dbs
-            val salt: ByteArray? = user.salt
-            //iv z dbs
-            val inicializationVector: ByteArray? = user.iv
-            //toto je privateKey(zasifrovany) z dbs
-            val encryptedSenderPrivateKeyFromDB: String? = user.privateKey
-
-            val senderPublicKeyFromDB: String? = user.publicKey
+                val senderPublicKeyFromDB: String? = user.publicKey
 
 
-            val e = Encryption()
-            //zahashujem novozadany pin pomocou saltu z dbs
-            val secretKey: SecretKey = e.hashPinLogin(salt, pinCode)
+                val e = Encryption()
+                //zahashujem novozadany pin pomocou saltu z dbs
+                val secretKey: SecretKey = e.hashPinLogin(salt, pinCode)
 
-            // prazdny object
-            var hped = HashedPinEncryptedData()
-            hped.encryptedText = encryptedSenderPrivateKeyFromDB
-            hped.hashedPin = secretKey
+                // prazdny object
+                var hped = HashedPinEncryptedData()
+                hped.encryptedText = encryptedSenderPrivateKeyFromDB
+                hped.hashedPin = secretKey
 
-            val decryptedPrivateKey = e.decrypt(hped, inicializationVector)
+                val decryptedPrivateKey = e.decrypt(hped, inicializationVector)
 
-            val source = KeyPair.fromSecretSeed(decryptedPrivateKey)
-            val senderPublicKeyFromDecryption = source.accountId
+                val source = KeyPair.fromSecretSeed(decryptedPrivateKey)
+                val senderPublicKeyFromDecryption = source.accountId
 
-            //skontrolujem ci sa novy publicKey ziskany z desifrovaneho(pomocou zadaneho pinu) privateKey, rovna public Key z databazy pre prihlaseneho usera
-            if(senderPublicKeyFromDecryption.equals(senderPublicKeyFromDB)) {
-                isPinCorrect = true
+                //skontrolujem ci sa novy publicKey ziskany z desifrovaneho(pomocou zadaneho pinu) privateKey, rovna public Key z databazy pre prihlaseneho usera
+                if(senderPublicKeyFromDecryption.equals(senderPublicKeyFromDB)) {
+                    isPinCorrect = true
 
-            }
+                }
 
-            if (isPinCorrect == true){
+                if (isPinCorrect == true){
 
-                pinResponse.isSuccess = true
-                pinResponse.message = "Pin correct, transaction"
-                pinResponse.decryptedPrivateKey = decryptedPrivateKey.toString() //treba ku transakcii
-                _eventPinControlResponse.value = pinResponse
+                    pinResponse.isSuccess = true
+                    pinResponse.message = "Pin correct, transaction"
+                    pinResponse.decryptedPrivateKey = decryptedPrivateKey.toString() //treba ku transakcii
+                    _eventPinControlResponse.value = pinResponse
+                }
+                else{
+
+                    pinResponse.isSuccess = false
+                    pinResponse.message = "Pin incorrect, try again"
+                    _eventPinControlResponse.value = pinResponse
+                }
             }
             else{
 
                 pinResponse.isSuccess = false
-                pinResponse.message = "Pin icorrect, try again"
+                pinResponse.message = "Pin incorrect, try again"
                 _eventPinControlResponse.value = pinResponse
             }
-        }
-        else{
-
+        }catch (e: Exception){
+            println("pin is not correct" + e.stackTrace)
             pinResponse.isSuccess = false
-            pinResponse.message = "Pin icorrect, try again"
+            pinResponse.message = "Pin incorrect, try again"
             _eventPinControlResponse.value = pinResponse
-        }
 
+        }
     }
 
     fun performTransaction(decryptedPrivateKey: String){
+
+        //po uspesnom overeni pinu sa z transaction fragment zavola funkcia na vykonanie transakcie
+        //natiahnute su polia public key a amount, pomocou 2way databinding, live data
+        var amount = getamount.value.toString().toDouble()
+        var recipientPublicKey = getpublicKey.value.toString()
 
         Log.d("transaction state", "PERFORMED")
         Log.d("dec private ", decryptedPrivateKey)
         Log.d("recipient public ", getpublicKey.value.toString())
         Log.d("amount to send ", getamount.value.toString())
-        //po uspesnom overeni pinu sa z transaction fragment zavola funkcia na vykonanie transakcie
-        //natiahnute su polia public key a amount, pomocou 2way databinding, live data
-        var amount = getamount.value.toString().toDouble()
-        var recipientPublicKey = getpublicKey.value.toString()
+
 
         GlobalScope.launch(Dispatchers.IO) {
             val keyPair: KeyPair = KeyPair.fromSecretSeed(decryptedPrivateKey)
@@ -424,17 +402,6 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     }
 
 
-    fun checkPin(){
-
-
-    }
-
-    fun onTransactionSuccessful(){
-
-        Log.d("Transaction succes", "Transaction successful")
-        //  todo: refresh balance from network
-    }
-
     fun onPartnerChosen(pkey: String){
 
         Log.i("partner chosen", pkey)
@@ -442,63 +409,8 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     }
 
 
-//    fun updatePartnerList(){    //zavolaj funkciu na natiahnutie partnerov z db, live data items update
-//                                // na response prebehne vo fragmente notifydatasetchanged v adapteri recyclere view
-//        viewModelScope.launch (Dispatchers.IO) {
-//            val newPartnersResponse: AllPartnersDBResponse = fetchPartnerList()
-//            _partnerList.postValue(newPartnersResponse.partnerList)
-//                    //aktualizuj zoznam partnerov pre recycler
-//            _eventPartnersFetched.postValue(newPartnersResponse)
-//                       //event je observovany, nan sa zmeni obsah recyclera podla live dat
-//        }
-//    }
-
-//    fun fetchPartnerList() :AllPartnersDBResponse{
-//
-//        //provizorne data
-//        //val p1 = PartnerDB("petrik", "XOOXOXOXOXOXO")
-//        //val p2 = PartnerDB("jozko", "JOJJOJOJOOJJOOJJOOJOJOJ")
-//        //newPartners.add(p1)
-//        //newPartners.add(p2)
-//        val res : AllPartnersDBResponse = AllPartnersDBResponse()
-//
-//        try{
-//
-//            var partnerss = partnerRepository.getAllPartners.value
-//            var mutablePartners = partnerss
-//
-//            var newPartners = mutableListOf<PartnerDB>()
-//
-//            for (item in mutablePartners!!){      // prekopirujem si list do mutabl listu
-//
-//                newPartners.add(item)
-//            }
-//
-//            res.partnerList = newPartners
-//            res.message = "success"
-//            res.isSuccess = true
-//
-//            return res      // DB response obsahujuca zozanm partnerov
-//        }
-//        catch (e: java.lang.Exception){
-//
-//            res.isSuccess = false
-//            res.message = "Partner DB loading not successful"
-//            return res
-//        }
-//    }
-
 
     fun onPartnerRemoval(partner: PartnerDB){
-
-        //val toBeRemoved: PartnerDB? = _partnerList.value?.get(position)
-        //val removalResponse = removePartnerFromDb(toBeRemoved!!, position)
-
-//        if (removalResponse.isSuccess){
-//
-//            _partnerList.value?.removeAt(position)      //zmaz partnera v liste
-//        }
-//        _eventPartnerFromDBremoval.value =   removalResponse
 
 
         var ondelResponse = PartnerDBResponse()
@@ -534,11 +446,6 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
         return dbRemResponse
     }
 
-    fun skuska(){
-//        viewModelScope.launch(Dispatchers.IO) {
-//            var partnersBypk = getAllPartnersByActiveUser(ActiveUserSingleton.publicKey)
-//        }
-    }
 
     //partner adding functions
 
@@ -573,12 +480,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     private suspend fun persistToDb() :PartnerDBResponse{
 
 
-//        newPartner.nickName = getPartnerAddingNickname.value.toString()
-//        newPartner.publicKey = getPartnerAddingKey.value.toString()
-
         val newPartner = PartnerDB(0,getPartnerAddingKey.value.toString(),ActiveUserSingleton.publicKey, getPartnerAddingNickname.value.toString())
-
-        //val persisted = true        //TODO: save to DB - provizorna premenna
 
         val response = PartnerDBResponse()
 
@@ -598,25 +500,6 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
     }
 
-
-//NEPOUZIVA sauz je to jednoduchsie
-    fun signalRecycler(partner: PartnerDB, position: Int){       //vyvola event ze treba updatenut recycler, Partnerom ktory sa vlozil do db
-
-        val newlist = _partnerList.value
-
-        newlist?.add(partner)
-        _partnerList.value = newlist!!
-
-        val recyclerPartner: Partner = Partner()
-        recyclerPartner.nickName = partner.nickName
-        recyclerPartner.publicKey = partner.publicKey
-        recyclerPartner.position = newlist.size -1      //partner zrovna pridany na koniec listu
-
-        _eventPartnerToRecycler.value = recyclerPartner  //Partner()
-
-        Log.i("partner in viewmodel" ,partner.publicKey)
-
-    }
 
 }
 

@@ -74,7 +74,6 @@ class TransactionPinFragment: DialogFragment(), View.OnClickListener {
                 confirmTransaction(response.decryptedPrivateKey)        // dialog close, send transaction, success remove field values - WM
             }
             else{
-
                 Toast.makeText(activity, response.message, Toast.LENGTH_LONG).show()
             }
         })
@@ -116,7 +115,7 @@ class TransactionPinFragment: DialogFragment(), View.OnClickListener {
 
 
     private fun closeTransaction(){
-        //Toast.makeText(activity,"Authorization closed", Toast.LENGTH_LONG).show()
+//        Toast.makeText(activity,"Incorrect pin, try again", Toast.LENGTH_LONG).show()
         dialog?.cancel()
     }
 

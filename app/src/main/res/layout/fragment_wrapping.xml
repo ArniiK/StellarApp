@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/menuToolbar"
-            app:title="@string/app_name"
             app:layout_scrollFlags="scroll|enterAlways"
             app:elevation="0dp"
             android:background="#7851A9"
@@ -32,12 +31,20 @@
 
 
                 />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:text="S-Wallet"
+                android:textSize="25sp"
+                android:textColor="@color/white"
+                />
             <ImageButton
                 android:id="@+id/refreshItem"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:background="@drawable/ic_baseline_refresh_24"
-                android:layout_gravity="right"
+                android:layout_gravity="left"
                 android:layout_marginEnd="20dp"
 
 
