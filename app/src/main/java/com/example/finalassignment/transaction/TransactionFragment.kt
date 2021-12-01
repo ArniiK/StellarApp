@@ -72,7 +72,7 @@ class TransactionFragment : Fragment(), View.OnClickListener, BeneficiariesFragm
 
             if (response.isSuccess){
 
-                Toast.makeText(activity,response.message, Toast.LENGTH_LONG).show()
+//                Toast.makeText(activity,response.message, Toast.LENGTH_LONG).show()
                 moveToPin()
             }
             else{
