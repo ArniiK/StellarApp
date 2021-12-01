@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.example.finalassignment.databinding.FragmentAfterLoginBinding
 import com.example.finalassignment.databinding.FragmentLoginBinding
 import com.example.finalassignment.roomdb.ActiveUser
@@ -150,7 +151,6 @@ class LoginFragment : Fragment(), View.OnClickListener, PinFragment.OnTransactio
 
 
     override fun onTransactionConfirmed() {
-
 
         val action = LoginFragmentDirections.actionLoginFragmentToWrappingFragment()
         view?.findNavController()?.navigate(action)

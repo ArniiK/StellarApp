@@ -41,6 +41,8 @@
             android:id="@+id/action_wrappingFragment_to_loginFragment"
             app:destination="@id/loginFragment"
             app:popUpToInclusive="true"
+            app:popUpTo="@id/nav_graph"
+            app:launchSingleTop="true"
             />
     </fragment>
 </navigation>

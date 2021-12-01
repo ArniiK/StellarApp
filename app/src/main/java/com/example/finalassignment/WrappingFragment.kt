@@ -12,6 +12,7 @@ import android.widget.TableLayout
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.finalassignment.databinding.FragmentWrappingBinding
 import com.example.finalassignment.singleton.ActiveUserSingleton
@@ -148,10 +149,16 @@ class WrappingFragment : Fragment(), TabLayout.OnTabSelectedListener, LogoutFrag
     }
 
     override fun onLogoutConfirmed() {
+
+        val directions = WrappingFragmentDirections
+
         val action = WrappingFragmentDirections.actionWrappingFragmentToLoginFragment()
+
         view?.findNavController()?.navigate(action)
         Toast.makeText(activity,"User successfully logged out", Toast.LENGTH_LONG).show()
     }
+
+
 
 
 }

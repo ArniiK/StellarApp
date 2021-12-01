@@ -186,7 +186,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
     fun validateTransaction(){
         viewModelScope.launch (Dispatchers.IO){
-            _eventValidationResponse.postValue(performValidation())
+            _eventValidationResponse.postValue(performValidation()!!)
         }
         //_eventInputsVerified.value = perform_validation()
 
@@ -336,7 +336,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
                 else{
 
                     pinResponse.isSuccess = false
-                    pinResponse.message = "Pin incorrect, try again"
+                                pinResponse.message = "Pin incorrect, try again"
                     _eventPinControlResponse.value = pinResponse
                 }
             }
@@ -482,6 +482,8 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
         val newPartner = PartnerDB(0,getPartnerAddingKey.value.toString(),ActiveUserSingleton.publicKey, getPartnerAddingNickname.value.toString())
 
+        //val persisted = true        //TODO: save to DB - provizorna premenna
+
         val response = PartnerDBResponse()
 
         try{
@@ -500,6 +502,25 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
 
     }
 
+
+//NEPOUZIVA sauz je to jednoduchsie
+    fun signalRecycler(partner: PartnerDB, position: Int){       //vyvola event ze treba updatenut recycler, Partnerom ktory sa vlozil do db
+
+        val newlist = _partnerList.value
+
+        newlist?.add(partner)
+        _partnerList.value = newlist!!
+
+        val recyclerPartner: Partner = Partner()
+        recyclerPartner.nickName = partner.nickName
+        recyclerPartner.publicKey = partner.publicKey
+        recyclerPartner.position = newlist.size -1      //partner zrovna pridany na koniec listu
+
+        _eventPartnerToRecycler.value = recyclerPartner  //Partner()
+
+        Log.i("partner in viewmodel" ,partner.publicKey)
+
+    }
 
 }
 
